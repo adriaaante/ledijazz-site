@@ -227,10 +227,10 @@ section > .container { position: relative; z-index: 2; }
 .hero-inner { position: relative; z-index: 3; max-width: 760px; }
 .hero h1 {
   font-size: clamp(3.4rem, 12vw, 8.2rem);
-  letter-spacing: .04em; line-height: .92; margin: .18em 0 .1em;
+  letter-spacing: .04em; line-height: 1.04; margin: .12em 0 .08em;
   text-transform: uppercase;
 }
-.hero h1 .gold-text { display: inline-block; }
+.hero h1 .gold-text { display: inline-block; padding-bottom: .16em; }
 .hero .tagline {
   font-family: var(--serif); font-style: italic; font-weight: 500;
   font-size: clamp(1.4rem, 3.4vw, 2.3rem); color: var(--bronze);
