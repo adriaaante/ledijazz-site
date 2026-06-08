@@ -203,7 +203,7 @@ section > .container { position: relative; z-index: 2; }
 @media (max-width: 880px) {
   .nav-toggle { display: flex; z-index: 260; }
   .nav-links {
-    position: fixed; inset: 0; flex-direction: column; justify-content: center; gap: 30px;
+    position: fixed; inset: 0; flex-direction: column; justify-content: safe center; gap: 30px;
     background: var(--noir); color: var(--ivory); overflow-y: auto; padding: 90px 24px 40px;
     transform: translateX(100%); transition: transform .55s var(--ease); z-index: 250;
   }
@@ -212,6 +212,9 @@ section > .container { position: relative; z-index: 2; }
   .nav-cta { margin: 10px 0 0; }
   .nav-toggle.open span { background: var(--ivory); }
   body.menu-open .cookie { display: none !important; }
+  /* backdrop-filter on a fixed ancestor would trap the fixed menu inside the
+     header box and clip it — disable it on mobile so the menu covers the screen */
+  .site-header.scrolled { backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 
 /* ----------------------------- Hero ------------------------------------- */
@@ -477,7 +480,8 @@ section > .container { position: relative; z-index: 2; }
   body { font-size: 16px; }
   .philo-grid, .collection-grid, .pack-grid, .media-stack { grid-template-columns: 1fr; }
   .media-stack .editorial:first-child { margin-top: 0; }
-  .cookie { flex-direction: column; align-items: stretch; text-align: center; }
+  .cookie { flex-direction: column; align-items: stretch; text-align: center; gap: 14px; }
+  .cookie p { flex: 0 1 auto; }
 }
 
 /* ============================ Reviews ============================ */
