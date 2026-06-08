@@ -23,12 +23,14 @@
       var open = links.classList.toggle("open");
       toggle.classList.toggle("open", open);
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      document.body.classList.toggle("menu-open", open);
       document.body.style.overflow = open ? "hidden" : "";
     });
     links.querySelectorAll("a").forEach(function (a) {
       a.addEventListener("click", function () {
         links.classList.remove("open");
         toggle.classList.remove("open");
+        document.body.classList.remove("menu-open");
         document.body.style.overflow = "";
       });
     });
