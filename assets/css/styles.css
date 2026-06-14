@@ -203,6 +203,12 @@ section > .container { position: relative; z-index: 2; }
 }
 .nav-links a:hover::after { width: 100%; }
 .nav-links a:hover { color: var(--bronze); }
+/* CTA-кнопка в навигации — у неё свой светлый текст, не наследует цвет ссылок,
+   и без подчёркивания (иначе текст «Каталог» сливался с фоном и пропадал при наведении) */
+.nav-links a.btn-gold,
+.nav-links a.btn-gold:hover,
+.nav-links a.btn-gold:focus { color: var(--white); }
+.nav-links a.btn::after { display: none; }
 .nav-cta { margin-left: 6px; }
 
 .nav-toggle { display: none; width: 44px; height: 44px; flex-direction: column; justify-content: center; gap: 6px; align-items: center; }
