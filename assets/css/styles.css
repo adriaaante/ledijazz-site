@@ -209,7 +209,10 @@ section > .container { position: relative; z-index: 2; }
 .nav-links a.btn-gold:hover,
 .nav-links a.btn-gold:focus { color: var(--white); }
 .nav-links a.btn::after { display: none; }
-.nav-cta { margin-left: 6px; border-radius: 100px; padding-inline: 1.5em; }
+.nav-cta { margin-left: 10px; border-radius: 100px; }
+/* .nav-links a задаёт padding: 4px 0 с большей специфичностью — поэтому у
+   кнопки-CTA не было боковых отступов и текст упирался в края. Возвращаем их. */
+.nav-links a.nav-cta { padding: .82em 2em; }
 
 .nav-toggle { display: none; width: 44px; height: 44px; flex-direction: column; justify-content: center; gap: 6px; align-items: center; }
 .nav-toggle span { width: 26px; height: 2px; background: var(--graphite); transition: transform .4s var(--ease), opacity .3s var(--ease); }
