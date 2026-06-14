@@ -73,7 +73,7 @@
       ph.innerHTML =
         '<svg viewBox="0 0 24 24" width="50" height="50" fill="none" stroke="#C79A3A" stroke-width="1.5">' +
         '<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>' +
-        '<p class="pp-title">Фирменный плейлист LEDIJAZZ</p>' +
+        '<p class="pp-title">Фирменный плейлист LEDI JAZZ</p>' +
         '<p class="pp-sub">Джазовое настроение, собранное командой бренда — слушайте в одно касание.</p>' +
         '<a class="btn btn-gold" data-yandex-url href="' + (CFG.yandexPlaylistUrl || "#") + '" target="_blank" rel="noopener">Слушать на Яндекс.Музыке</a>';
       embed.replaceWith(ph);
@@ -137,7 +137,7 @@
         "Размер: " + (size ? size.value : "") + "\n" +
         "Сообщение: " + (note ? note.value : "")
       );
-      var subject = encodeURIComponent("Предзаказ LEDIJAZZ");
+      var subject = encodeURIComponent("Предзаказ LEDI JAZZ");
       msg.classList.add("ok");
       msg.textContent = "Спасибо! Открывается почтовое приложение для отправки заявки. Мы свяжемся с вами.";
       window.location.href = "mailto:" + email + "?subject=" + subject + "&body=" + body;

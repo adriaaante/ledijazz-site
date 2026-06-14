@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Оформление заказа — LEDI JAZZ</title>
+  <meta name="description" content="Оформление заказа LEDI JAZZ: самовывоз или доставка, без онлайн-оплаты. Гостевое оформление." />
+  <meta name="theme-color" content="#1A1815" />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/svg+xml" href="assets/img/ledijazz-logo.svg" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/img/favicon-512.png" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+
+  <header class="site-header scrolled">
+    <div class="container">
+      <a class="brand" href="index.html#top" aria-label="LEDI JAZZ — на главную">
+        <img class="mark" src="assets/img/ledijazz-logo.svg" alt="" />
+        <span class="wordmark">Ledi Jazz</span>
+      </a>
+      <nav class="nav-links" aria-label="Главное меню">
+        <a href="about.html">О бренде</a>
+        <a href="shop.html">Магазин</a>
+        <a href="collection.html">Коллекции</a>
+        <a href="index.html#music">Музыка</a>
+        <a href="index.html#faq">FAQ</a>
+        <a class="btn btn-gold nav-cta" href="shop.html">Каталог</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Меню" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <section class="legal-hero grain" style="padding-bottom:34px">
+    <div class="container">
+      <span class="kicker reveal">Оформление заказа</span>
+      <h1 class="title gold-text reveal d1" style="font-size:clamp(2.2rem,6vw,4rem);padding-bottom:.1em">Корзина и доставка</h1>
+      <p class="lead reveal d2" style="color:var(--muted);max-width:60ch">Оформите заказ как гость — регистрация не нужна. Онлайн-оплата не требуется: мы свяжемся с вами для подтверждения.</p>
+    </div>
+  </section>
+
+  <section class="section-ivory" style="padding-top:clamp(30px,5vw,60px)">
+    <div class="container">
+
+      <!-- Пустая корзина -->
+      <div id="checkout-empty" class="shop-empty" style="display:none">
+        <p>Корзина пуста</p>
+        <span>Добавьте понравившиеся образы из каталога.</span>
+        <div class="btn-row" style="justify-content:center;margin-top:26px">
+          <a class="btn btn-gold" href="shop.html">Перейти в магазин</a>
+        </div>
+      </div>
+
+      <!-- Успешное оформление -->
+      <div id="order-success" style="display:none"></div>
+
+      <!-- Основная разметка оформления -->
+      <div id="checkout-layout" class="checkout-wrap">
+        <form id="checkout-form" class="form-card" novalidate>
+          <div class="form-msg" role="status"></div>
+
+          <h3 style="font-size:1.4rem;margin-bottom:18px">Контактные данные</h3>
+          <div class="field-grid">
+            <div class="field">
+              <label for="f-name">Имя и фамилия *</label>
+              <input type="text" id="f-name" name="name" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="f-phone">Телефон *</label>
+              <input type="tel" id="f-phone" name="phone" autocomplete="tel" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-email">E-mail (необязательно)</label>
+            <input type="email" id="f-email" name="email" autocomplete="email" />
+          </div>
+
+          <h3 style="font-size:1.4rem;margin:26px 0 16px">Способ получения</h3>
+          <div class="fulfillment">
+            <div class="ful-opt">
+              <input type="radio" id="m-pickup" name="fulfillment" value="pickup" checked />
+              <label for="m-pickup">
+                <span class="ft"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9 12 3l9 6v11a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg> Самовывоз</span>
+                <span class="fd">Заберу заказ сам(а)</span>
+              </label>
+            </div>
+            <div class="ful-opt">
+              <input type="radio" id="m-delivery" name="fulfillment" value="delivery" />
+              <label for="m-delivery">
+                <span class="ft"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg> Доставка</span>
+                <span class="fd">Доставьте по адресу</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="pickup-info"></div>
+
+          <div id="delivery-fields">
+            <div id="delivery-note"></div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="f-city">Город</label>
+                <input type="text" id="f-city" name="city" autocomplete="address-level2" />
+              </div>
+              <div class="field">
+                <label for="f-zip">Индекс</label>
+                <input type="text" id="f-zip" name="zip" autocomplete="postal-code" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="f-address">Адрес доставки (улица, дом, квартира) *</label>
+              <input type="text" id="f-address" name="address" autocomplete="street-address" />
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:8px">
+            <label for="f-note">Комментарий к заказу</label>
+            <textarea id="f-note" name="note" placeholder="Пожелания по размеру, времени связи, упаковке…"></textarea>
+          </div>
+
+          <label class="consent">
+            <input type="checkbox" id="consent" name="consent" />
+            <span>Я соглас/согласна на обработку персональных данных в соответствии с <a href="privacy.html" target="_blank" rel="noopener">Политикой конфиденциальности</a> и принимаю условия <a href="offer.html" target="_blank" rel="noopener">Оферты</a>.</span>
+          </label>
+
+          <button type="submit" class="btn btn-gold full">Оформить заказ</button>
+          <p style="font-size:.78rem;color:var(--muted);margin-top:14px;text-align:center">
+            После нажатия откроется Telegram с готовым текстом заказа — выберите наш чат и отправьте.
+          </p>
+        </form>
+
+        <aside class="checkout-summary" id="checkout-summary"></aside>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="site-footer grain">
+    <div class="container">
+      <div class="footer-bottom" style="border:none;padding-top:0">
+        <span>© <span data-year>2026</span> LEDI JAZZ. Все права защищены.</span>
+        <span><a href="delivery.html">Доставка</a> · <a href="privacy.html">Конфиденциальность</a> · <a href="offer.html">Оферта</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/shop.js"></script>
+</body>
+</html>

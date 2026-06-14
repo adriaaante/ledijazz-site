@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Коллекции LEDIJAZZ — лукбук линеек одежды-флюид</title>
-  <meta name="description" content="Лукбук LEDIJAZZ: линейки Home, Riviera, Travel, Evening Soft, Noir, Aura, Silk, Linen и Limited. Премиальная одежда-флюид, размеры 50–64." />
+  <title>Коллекции LEDI JAZZ — линейки одежды-флюид</title>
+  <meta name="description" content="Коллекции LEDI JAZZ: линейки Home, Riviera, Travel, Evening Soft, Noir, Aura, Silk, Linen и Limited. Войдите в раздел, чтобы выбрать и заказать модель. Размеры 50–64." />
+  <meta name="theme-color" content="#1A1815" />
   <link rel="icon" type="image/svg+xml" href="assets/img/ledijazz-logo.svg" />
   <link rel="icon" type="image/png" sizes="512x512" href="assets/img/favicon-512.png" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -13,17 +14,17 @@
 
   <header class="site-header scrolled">
     <div class="container">
-      <a class="brand" href="index.html#top" aria-label="LEDIJAZZ — на главную">
+      <a class="brand" href="index.html#top" aria-label="LEDI JAZZ — на главную">
         <img class="mark" src="assets/img/ledijazz-logo.svg" alt="" />
-        <span class="wordmark">Ledijazz</span>
+        <span class="wordmark">Ledi Jazz</span>
       </a>
       <nav class="nav-links" aria-label="Главное меню">
         <a href="about.html">О бренде</a>
+        <a href="shop.html">Магазин</a>
         <a href="collection.html">Коллекции</a>
         <a href="index.html#music">Музыка</a>
-        <a href="index.html#reviews">Отзывы</a>
         <a href="index.html#faq">FAQ</a>
-        <a class="btn btn-gold nav-cta" href="index.html#preorder">Предзаказ</a>
+        <a class="btn btn-gold nav-cta" href="shop.html">Каталог</a>
       </nav>
       <button class="nav-toggle" aria-label="Меню" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
@@ -32,48 +33,51 @@
   <!-- Lookbook hero -->
   <section class="legal-hero grain" style="padding-bottom:80px">
     <div class="container">
-      <span class="kicker reveal">Лукбук · сезон</span>
+      <span class="kicker reveal">Коллекции · разделы</span>
       <h1 class="title gold-text reveal d1" style="font-size:clamp(2.6rem,7vw,5rem)">Коллекции</h1>
-      <p class="lead reveal d2" style="color:var(--muted-d);max-width:60ch">Восемь линеек, одна философия — «платье-флюид». Мягкие силуэты для каждого дня и особого случая, размеры 50–64.</p>
+      <p class="lead reveal d2" style="color:var(--muted);max-width:60ch">Девять линеек, одна философия — «платье-флюид». Войдите в любой раздел, чтобы посмотреть и заказать модели именно этой линейки, или откройте весь каталог с фильтрами. Размеры 50–64.</p>
+      <div class="btn-row reveal d3" style="margin-top:26px">
+        <a class="btn btn-gold" href="shop.html">Весь каталог</a>
+      </div>
     </div>
   </section>
 
-  <!-- Lines -->
+  <!-- Lines: each card enters its shop section -->
   <section class="section-ivory">
     <div class="container">
       <div class="collection-grid">
 
-        <article class="coll-card reveal"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Home</span></div>
-          <div class="meta"><span class="ln">L · Home</span><h3>Дом</h3><p>Уют, отдых, терраса, гостевые вечера.</p></div></article>
+        <a class="coll-card reveal" href="shop.html?collection=home"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Home</span></div>
+          <div class="meta"><span class="ln">L · Home</span><h3>Дом</h3><p>Уют, отдых, терраса, гостевые вечера.</p></div></a>
 
-        <article class="coll-card reveal d1"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Mu</span></div>
-          <div class="meta"><span class="ln">L · Mu</span><h3>Повседневность</h3><p>Базовые образы на каждый день, ДНК бренда.</p></div></article>
+        <a class="coll-card reveal d1" href="shop.html?collection=casual"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Mu</span></div>
+          <div class="meta"><span class="ln">L · Mu</span><h3>Повседневность</h3><p>Базовые образы на каждый день, ДНК бренда.</p></div></a>
 
-        <article class="coll-card reveal d2"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Riviera</span></div>
-          <div class="meta"><span class="ln">L · Riviera</span><h3>Ривьера</h3><p>Поездки к морю, тёплые города, лёгкость.</p></div></article>
+        <a class="coll-card reveal d2" href="shop.html?collection=riviera"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Riviera</span></div>
+          <div class="meta"><span class="ln">L · Riviera</span><h3>Ривьера</h3><p>Поездки к морю, тёплые города, лёгкость.</p></div></a>
 
-        <article class="coll-card reveal"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Travel</span></div>
-          <div class="meta"><span class="ln">L · Travel</span><h3>Путешествия</h3><p>Комфорт в дороге без потери элегантности.</p></div></article>
+        <a class="coll-card reveal" href="shop.html?collection=travel"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Travel</span></div>
+          <div class="meta"><span class="ln">L · Travel</span><h3>Путешествия</h3><p>Комфорт в дороге без потери элегантности.</p></div></a>
 
-        <article class="coll-card reveal d1"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Evening Soft</span></div>
-          <div class="meta"><span class="ln">L · Evening Soft</span><h3>Мягкий вечер</h3><p>Ужин, встречи, спокойная вечерняя элегантность.</p></div></article>
+        <a class="coll-card reveal d1" href="shop.html?collection=evening"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Evening Soft</span></div>
+          <div class="meta"><span class="ln">L · Evening Soft</span><h3>Мягкий вечер</h3><p>Ужин, встречи, спокойная вечерняя элегантность.</p></div></a>
 
-        <article class="coll-card reveal d2"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Noir</span></div>
-          <div class="meta"><span class="ln">L · Noir / Aura</span><h3>Нуар</h3><p>Глубокие тона, благородные ткани, особый случай.</p></div></article>
+        <a class="coll-card reveal d2" href="shop.html?collection=noir"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Noir</span></div>
+          <div class="meta"><span class="ln">L · Noir / Aura</span><h3>Нуар</h3><p>Глубокие тона, благородные ткани, особый случай.</p></div></a>
 
-        <article class="coll-card reveal"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Silk</span></div>
-          <div class="meta"><span class="ln">L · Silk / Mood</span><h3>Шёлк</h3><p>Премиальный шёлк для ужина, шоу и торжеств.</p></div></article>
+        <a class="coll-card reveal" href="shop.html?collection=silk"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Silk</span></div>
+          <div class="meta"><span class="ln">L · Silk / Mood</span><h3>Шёлк</h3><p>Премиальный шёлк для ужина, шоу и торжеств.</p></div></a>
 
-        <article class="coll-card reveal d1"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Linen</span></div>
-          <div class="meta"><span class="ln">L · Linen</span><h3>Лён</h3><p>Натуральный лён, дышащий комфорт лета.</p></div></article>
+        <a class="coll-card reveal d1" href="shop.html?collection=linen"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Linen</span></div>
+          <div class="meta"><span class="ln">L · Linen</span><h3>Лён</h3><p>Натуральный лён, дышащий комфорт лета.</p></div></a>
 
-        <article class="coll-card reveal d2"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Limited</span></div>
-          <div class="meta"><span class="ln">L · Limited</span><h3>Лимитированное</h3><p>Капсульные ограниченные выпуски и premium-линии.</p></div></article>
+        <a class="coll-card reveal d2" href="shop.html?collection=limited"><div class="editorial"><img class="ph-emblem" src="assets/img/ledijazz-logo.svg" alt=""><span class="ph-label">Фото · L Limited</span></div>
+          <div class="meta"><span class="ln">L · Limited</span><h3>Лимитированное</h3><p>Капсульные ограниченные выпуски и premium-линии.</p></div></a>
 
       </div>
 
       <div class="btn-row reveal" style="justify-content:center;margin-top:56px">
-        <a class="btn btn-gold" href="index.html#preorder">Оставить заявку на предзаказ</a>
+        <a class="btn btn-gold" href="shop.html">Открыть весь каталог</a>
         <a class="btn btn-ghost" href="index.html#top">На главную</a>
       </div>
     </div>
@@ -82,7 +86,7 @@
   <footer class="site-footer grain">
     <div class="container">
       <div class="footer-bottom" style="border:none;padding-top:0">
-        <span>© <span data-year>2026</span> LEDIJAZZ. Все права защищены.</span>
+        <span>© <span data-year>2026</span> LEDI JAZZ. Все права защищены.</span>
         <span><a href="privacy.html">Конфиденциальность</a> · <a href="offer.html">Оферта</a> · <a href="delivery.html">Доставка</a></span>
       </div>
     </div>
@@ -90,5 +94,6 @@
 
   <script src="assets/js/config.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/shop.js"></script>
 </body>
 </html>
