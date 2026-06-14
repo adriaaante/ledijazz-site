@@ -382,6 +382,9 @@ section > .container { position: relative; z-index: 2; }
 
 /* ----------------------------- Audience / Lifestyle --------------------- */
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 80px); align-items: center; }
+/* колонки grid не должны раздуваться под min-content содержимого (иначе
+   таблица размеров вызывала горизонтальное переполнение на мобильных) */
+.split > * { min-width: 0; }
 .split.rev .split-media { order: -1; }
 .stat-row { display: flex; gap: clamp(20px, 4vw, 46px); margin-top: 30px; flex-wrap: wrap; }
 .stat .n { font-family: var(--serif); font-size: 2.6rem; line-height: 1; background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
@@ -392,7 +395,8 @@ section > .container { position: relative; z-index: 2; }
 /* ----------------------------- Fabrics & sizes -------------------------- */
 .fabric-list { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
 .chip { padding: .55em 1.1em; background: var(--white); border: 1px solid color-mix(in srgb, var(--bronze) 26%, transparent); border-radius: 100px; font-size: .82rem; letter-spacing: .04em; color: var(--graphite); box-shadow: var(--shadow-sm); }
-.size-table { width: 100%; border-collapse: collapse; margin-top: 26px; font-size: .95rem; background: var(--white); border-radius: 6px; overflow: hidden; box-shadow: var(--shadow-sm); }
+.size-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 26px; font-size: .95rem; background: var(--white); border-radius: 6px; overflow: hidden; box-shadow: var(--shadow-sm); }
+.size-table th, .size-table td { overflow-wrap: anywhere; }
 .size-table th, .size-table td { text-align: left; padding: 16px 18px; border-bottom: 1px solid color-mix(in srgb, var(--bronze) 14%, transparent); }
 .size-table tr:last-child td { border-bottom: none; }
 .size-table th { font-family: var(--sans); font-weight: 700; font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--bronze); background: var(--ivory); }
