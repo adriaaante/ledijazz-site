@@ -2,8 +2,7 @@
 # а тот сам скачивает свежий main с GitHub и раскладывает файлы.
 # Секрет DEPLOY_TOKEN — тот же токен, чей SHA-256 записан в deploy.php.
 # Переменные (необязательно):
-#   DEPLOY_URL  — адрес deploy.php (по умолчанию http://ledijazz.ru/deploy.php;
-#                 после выпуска SSL — https://ledijazz.ru/deploy.php)
+#   DEPLOY_URL  — адрес deploy.php (по умолчанию https://ledijazz.ru/deploy.php)
 #   DEPLOY_HOST — заголовок Host для запроса по IP (по умолчанию ledijazz.ru)
 
 name: Deploy to hosting
@@ -23,7 +22,7 @@ jobs:
     steps:
       - name: Попросить сайт обновиться с GitHub
         env:
-          URL: ${{ vars.DEPLOY_URL || 'http://ledijazz.ru/deploy.php' }}
+          URL: ${{ vars.DEPLOY_URL || 'https://ledijazz.ru/deploy.php' }}
           HOST: ${{ vars.DEPLOY_HOST || 'ledijazz.ru' }}
           TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         run: |
@@ -36,7 +35,7 @@ jobs:
 
       - name: Проверить, что сайт отдаёт страницы
         env:
-          URL: ${{ vars.DEPLOY_URL || 'http://ledijazz.ru/deploy.php' }}
+          URL: ${{ vars.DEPLOY_URL || 'https://ledijazz.ru/deploy.php' }}
           HOST: ${{ vars.DEPLOY_HOST || 'ledijazz.ru' }}
         run: |
           base="${URL%/deploy.php}"; fail=0
@@ -56,9 +55,11 @@ jobs:
         run: |
           echo "--- https://ledijazz.ru ---"
           if curl -sS -o /dev/null -w 'HTTPS: HTTP %{http_code}, проверка сертификата=%{ssl_verify_result} (0 = валиден)\n' --max-time 30 https://ledijazz.ru/; then
-            echo | openssl s_client -connect ledijazz.ru:443 -servername ledijazz.ru 2>/dev/null | openssl x509 -noout -issuer -dates | sed 's/^/  /'
+            echo | openssl s_client -connect ledijazz.ru:443 -servername ledijazz.ru 2>/dev/null \
+              | openssl x509 -noout -issuer -dates -ext subjectAltName | sed 's/^/  /'
+            echo "  проверка www:"; curl -sS -o /dev/null -w '    www: HTTP %{http_code} verify=%{ssl_verify_result}\n' --max-time 20 https://www.ledijazz.ru/ || echo "    www: сертификат не покрывает www.ledijazz.ru"
           else
-            echo "HTTPS не отвечает — сертификат ещё не выпущен (ISPmanager → Сайты → ledijazz.ru → SSL → Let's Encrypt)"
+            echo "::warning::HTTPS недоступен или сертификат не доверенный"
           fi
           echo "--- IPv6 ---"
           curl -6 -sS -o /dev/null -w 'IPv6: HTTP %{http_code}\n' --max-time 20 http://ledijazz.ru/ || echo "IPv6: недоступен с раннера (не критично)"
