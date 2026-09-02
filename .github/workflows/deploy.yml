@@ -2,16 +2,14 @@
 # Запускается при каждом push в main и вручную (Actions → Deploy → Run workflow).
 #
 # Секреты (Settings → Secrets and variables → Actions → Secrets):
-#   FTP_HOST      — сервер хостинга, напр. sm30.hosting.reg.ru
-#   FTP_USER      — логин хостинга, напр. u3534471
-#   FTP_PASSWORD  — пароль хостинга
+#   FTP_HOST      — адрес сервера из раздела «Доступы» (без https:// и без порта)
+#   FTP_USER      — логин FTP/SFTP
+#   FTP_PASSWORD  — пароль FTP/SFTP
 #
 # Переменные (вкладка Variables) — все необязательные:
-#   DEPLOY_METHOD  — sftp (по умолчанию) | ftp | ftps
+#   DEPLOY_METHOD  — auto (по умолчанию: пробует sftp → ftp → ftps) | sftp | ftp | ftps
 #   DEPLOY_PATH    — папка сайта на сервере (по умолчанию www/ledijazz.ru)
 #   DEPLOY_PORT    — порт SFTP (по умолчанию 22)
-#
-# Простой FTP (порт 21) на shared-хостинге REG.RU закрыт, поэтому по умолчанию SFTP.
 
 name: Deploy to hosting
 
@@ -27,13 +25,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Пока доступ по SFTP/FTP к хостингу закрыт, автодеплой выключен,
-    # чтобы каждый коммит не создавал падающую сборку.
-    # Как только доступ откроется — создайте переменную DEPLOY_ENABLED = true
-    # (Settings → Secrets and variables → Actions → Variables), и всё заработает.
-    if: vars.DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
     env:
-      METHOD: ${{ vars.DEPLOY_METHOD || 'sftp' }}
+      METHOD: ${{ vars.DEPLOY_METHOD || 'auto' }}
       SITE_PATH: ${{ vars.DEPLOY_PATH || 'www/ledijazz.ru' }}
       SSH_PORT: ${{ vars.DEPLOY_PORT || '22' }}
     steps:
@@ -49,9 +42,10 @@ jobs:
             ./ _site/
           echo "Файлов к выкладке: $(find _site -type f | wc -l)"
 
-      # ---------- SFTP (по умолчанию) ----------
-      - name: Диагностика доступа и путей на сервере
-        if: env.METHOD == 'sftp'
+      # ---------- 1. SFTP ----------
+      - name: Подготовить папку сайта по SSH
+        id: ssh
+        if: env.METHOD == 'auto' || env.METHOD == 'sftp'
         continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -60,17 +54,13 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ env.SSH_PORT }}
           script: |
-            echo "== домашняя папка =="; echo "HOME=$HOME"; pwd
-            echo "== содержимое дома =="; ls -la "$HOME" 2>/dev/null | head -30
-            echo "== папки сайтов =="
-            for d in "$HOME/www" "$HOME/data/www" /var/www/$USER/data/www; do
-              [ -d "$d" ] && { echo "НАЙДЕНО: $d"; ls -la "$d"; }
-            done
-            echo "== создаю папку сайта =="
+            echo "HOME=$HOME"; ls -d "$HOME"/www "$HOME"/data/www 2>/dev/null
             mkdir -p "$HOME/${{ env.SITE_PATH }}" && echo "OK: $HOME/${{ env.SITE_PATH }}"
 
       - name: Выложить по SFTP
-        if: env.METHOD == 'sftp'
+        id: sftp
+        if: env.METHOD == 'auto' || env.METHOD == 'sftp'
+        continue-on-error: ${{ env.METHOD == 'auto' }}
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.FTP_HOST }}
@@ -81,17 +71,43 @@ jobs:
           target: ${{ env.SITE_PATH }}
           strip_components: 1
           overwrite: true
-          timeout: 120s
+          timeout: 60s
           command_timeout: 20m
 
-      # ---------- FTP / FTPS (запасной вариант) ----------
+      # ---------- 2. FTP ----------
       - name: Выложить по FTP
-        if: env.METHOD == 'ftp' || env.METHOD == 'ftps'
+        id: ftp
+        if: env.METHOD == 'ftp' || (env.METHOD == 'auto' && steps.sftp.outcome != 'success')
+        continue-on-error: ${{ env.METHOD == 'auto' }}
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ env.METHOD }}
+          protocol: ftp
           server-dir: /${{ env.SITE_PATH }}/
           local-dir: ./_site/
+          timeout: 60000
+
+      # ---------- 3. FTPS ----------
+      - name: Выложить по FTPS
+        id: ftps
+        if: env.METHOD == 'ftps' || (env.METHOD == 'auto' && steps.sftp.outcome != 'success' && steps.ftp.outcome != 'success')
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          server-dir: /${{ env.SITE_PATH }}/
+          local-dir: ./_site/
+          timeout: 60000
+
+      - name: Итог
+        if: always()
+        run: |
+          echo "sftp: ${{ steps.sftp.outcome }} | ftp: ${{ steps.ftp.outcome }} | ftps: ${{ steps.ftps.outcome }}"
+          for s in "${{ steps.sftp.outcome }}" "${{ steps.ftp.outcome }}" "${{ steps.ftps.outcome }}"; do
+            [ "$s" = "success" ] && { echo "✅ Сайт выложен."; exit 0; }
+          done
+          echo "❌ Ни один способ не сработал — см. логи шагов выше."; exit 1
