@@ -16,6 +16,8 @@ const TOKEN_SHA256 = 'bc27065a246ec0c2fc39b2da5eb20aeea05597f718e88e570c48a7492a
 // токеном GitHub (права: Contents → Read). Для публичного не нужен.
 const GITHUB_TOKEN_FILE = __DIR__ . '/.github-token';
 const EXCLUDE = ['.git', '.github', '.claude', 'README.md', 'ДАННЫЕ-ДЛЯ-ЗАПОЛНЕНИЯ.md', '.gitignore'];
+// Устаревшие файлы, которые нужно удалить с сервера при деплое
+const REMOVE  = ['kit.html'];
 
 @set_time_limit(300);
 header('Content-Type: text/plain; charset=utf-8');
@@ -78,6 +80,7 @@ foreach ($it as $item) {
     if (!copy($item->getPathname(), $dest)) fail(500, "не удалось записать $rel");
     $copied++;
 }
+foreach (REMOVE as $old) { $f = $root . '/' . $old; if (is_file($f)) { unlink($f); out("Удалён устаревший файл: $old"); } }
 rrmdir($tmp);
 $sha = trim(@file_get_contents('https://api.github.com/repos/' . REPO . '/commits/' . BRANCH,
     false, stream_context_create(['http' => ['header' => "User-Agent: ledijazz-deploy\r\nAccept: application/vnd.github.sha", 'timeout' => 10]])) ?: '');
