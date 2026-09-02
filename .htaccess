@@ -7,10 +7,13 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} !^ledijazz\.ru$ [NC]
 RewriteRule ^(.*)$ https://ledijazz.ru/$1 [R=301,L]
 
-# 2. http → https (учитываем прокси хостинга)
-RewriteCond %{HTTPS} off
-RewriteCond %{HTTP:X-Forwarded-Proto} !https
-RewriteRule ^(.*)$ https://ledijazz.ru/$1 [R=301,L]
+# 2. http → https.
+#    ВКЛЮЧИТЬ ПОСЛЕ выпуска SSL-сертификата (ISPmanager → WWW-домены →
+#    ledijazz.ru → SSL → Let's Encrypt): уберите «# » в трёх строках ниже.
+#    Если включить раньше — сайт перестанет открываться.
+# RewriteCond %{HTTPS} off
+# RewriteCond %{HTTP:X-Forwarded-Proto} !https
+# RewriteRule ^(.*)$ https://ledijazz.ru/$1 [R=301,L]
 
 # 3. Кодировка и кэширование статики
 AddDefaultCharset UTF-8

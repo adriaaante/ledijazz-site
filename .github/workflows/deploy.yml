@@ -25,6 +25,11 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Сервер REG.RU отклоняет FTP/SSH-подключения с IP GitHub (ограничение по
+    # странам). Пока поддержка REG.RU не откроет доступ, автозапуск выключен.
+    # Как откроют — создайте переменную DEPLOY_ENABLED = true
+    # (Settings → Secrets and variables → Actions → Variables).
+    if: vars.DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
     env:
       METHOD: ${{ vars.DEPLOY_METHOD || 'auto' }}
       SITE_PATH: ${{ vars.DEPLOY_PATH || 'www/ledijazz.ru' }}
