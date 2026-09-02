@@ -1,8 +1,12 @@
 # Автодеплой: после push в main GitHub вызывает deploy.php на сайте,
 # а тот сам скачивает свежий main с GitHub и раскладывает файлы.
 # Секрет DEPLOY_TOKEN — тот же токен, чей SHA-256 записан в deploy.php.
-# Переменная DEPLOY_URL (необязательно) — адрес deploy.php,
-# по умолчанию https://ledijazz.ru/deploy.php
+# Переменные (необязательно):
+#   DEPLOY_URL  — адрес deploy.php. Пока DNS ledijazz.ru не переведён на
+#                 server126 (37.140.192.213), по умолчанию идём прямо по IP.
+#                 После переноса DNS и выпуска SSL поставьте
+#                 DEPLOY_URL = https://ledijazz.ru/deploy.php
+#   DEPLOY_HOST — заголовок Host для запроса по IP (по умолчанию ledijazz.ru)
 
 name: Deploy to hosting
 
@@ -21,11 +25,13 @@ jobs:
     steps:
       - name: Попросить сайт обновиться с GitHub
         env:
-          URL: ${{ vars.DEPLOY_URL || 'https://ledijazz.ru/deploy.php' }}
+          URL: ${{ vars.DEPLOY_URL || 'http://37.140.192.213/deploy.php' }}
+          HOST: ${{ vars.DEPLOY_HOST || 'ledijazz.ru' }}
           TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         run: |
-          [ -n "$TOKEN" ] || { echo "::error::Нет секрета DEPLOY_TOKEN"; exit 1; }
-          echo "→ $URL"
-          code=$(curl -sS -o resp.txt -w '%{http_code}' --max-time 300 -X POST -H "X-Deploy-Token: $TOKEN" "$URL") || code=000
+          [ -n "$TOKEN" ] || { echo "::error::Нет секрета DEPLOY_TOKEN — добавьте его в Settings → Secrets"; exit 1; }
+          echo "→ $URL (Host: $HOST)"
+          code=$(curl -sS -o resp.txt -w '%{http_code}' --max-time 300 -X POST \
+                 -H "Host: $HOST" -H "X-Deploy-Token: $TOKEN" "$URL") || code=000
           cat resp.txt; echo
           [ "$code" = "200" ] || { echo "::error::deploy.php ответил HTTP $code"; exit 1; }
