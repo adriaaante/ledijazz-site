@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>Бренд-кит — LEDI JAZZ</title>
+  <link rel="icon" type="image/svg+xml" href="assets/img/ledijazz-logo.svg" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    /* ---------- PIN ---------- */
+    .pin-screen{min-height:100svh;display:grid;place-items:center;padding:24px;background:
+      radial-gradient(115% 95% at 84% 6%, color-mix(in srgb, var(--gold-lt) 42%, var(--ivory)) 0%, var(--ivory) 40%, var(--cream) 100%)}
+    .pin-card{width:min(460px,100%);text-align:center;background:var(--white);border-radius:10px;padding:clamp(28px,5vw,48px) clamp(22px,5vw,40px);box-shadow:var(--shadow-md)}
+    .pin-card .mark{width:64px;margin:0 auto 14px}
+    .pin-card h1{font-size:1.7rem;margin:.2em 0 .3em}
+    .pin-card p{color:var(--muted);font-size:.9rem;margin-bottom:22px}
+    .pin-boxes{display:flex;justify-content:center;gap:10px;margin-bottom:18px;cursor:text}
+    .pin-boxes span{width:46px;height:56px;border-radius:6px;background:var(--ivory);border:1.5px solid color-mix(in srgb,var(--bronze) 22%,transparent);
+      display:grid;place-items:center;font-family:var(--serif);font-size:1.7rem;color:var(--graphite);transition:border-color .2s,transform .2s}
+    .pin-boxes span.filled{border-color:var(--brown)}
+    .pin-boxes span.active{border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 22%,transparent)}
+    .pin-boxes.err{animation:shake .45s var(--ease)}
+    @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+    #pin-input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+    .pin-msg{min-height:1.4em;font-size:.82rem;color:#9c3b3b}
+    /* ---------- KIT ---------- */
+    .kit{display:none}
+    .kit.show{display:block}
+    .kit-hero{padding:120px 0 36px;background:radial-gradient(110% 130% at 85% 0%, color-mix(in srgb,var(--gold-lt) 38%,var(--ivory)), var(--cream))}
+    .kit-nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--ivory) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid color-mix(in srgb,var(--bronze) 16%,transparent)}
+    .kit-nav .container{display:flex;gap:6px;overflow-x:auto;padding-block:10px;scrollbar-width:thin}
+    .kit-nav a{flex:none;padding:.55em 1.05em;border-radius:100px;font-size:.8rem;font-weight:600;color:var(--graphite);background:var(--white);border:1px solid color-mix(in srgb,var(--bronze) 20%,transparent);white-space:nowrap}
+    .kit-nav a:hover{border-color:var(--bronze)}
+    .svc{padding-block:clamp(48px,7vw,80px);border-bottom:1px solid color-mix(in srgb,var(--bronze) 14%,transparent)}
+    .svc:nth-child(even){background:var(--ivory)}
+    .svc-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+    .svc-ico{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:1.05rem;color:#fff;flex:none;letter-spacing:.04em}
+    .svc h2{font-size:clamp(1.7rem,4vw,2.4rem)}
+    .svc .lead{margin-bottom:26px;max-width:70ch}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:22px}
+    .asset{background:var(--white);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+    .asset .prev{background:linear-gradient(155deg,var(--sand-2),var(--cream));display:grid;place-items:center;padding:14px;min-height:170px}
+    .asset .prev img{max-height:220px;width:auto;max-width:100%;border-radius:3px;box-shadow:0 8px 24px -14px rgba(26,24,21,.6)}
+    .asset .prev img.round{border-radius:50%;width:150px;height:150px}
+    .asset .prev img.tall{max-height:260px}
+    .asset .b{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+    .asset .t{font-family:var(--serif);font-size:1.18rem;color:var(--graphite)}
+    .asset .d{font-size:.8rem;color:var(--muted);line-height:1.5}
+    .asset .sz{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze);font-weight:700}
+    .asset .btn{margin-top:auto;align-self:flex-start;padding:.7em 1.3em;font-size:.72rem;border-radius:100px}
+    .spec{width:100%;border-collapse:collapse;background:var(--white);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm);font-size:.92rem;margin-top:22px;table-layout:fixed}
+    .spec th,.spec td{padding:12px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(--bronze) 12%,transparent);vertical-align:top;overflow-wrap:anywhere}
+    .spec th{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze);background:var(--ivory)}
+    .spec tr:last-child td{border-bottom:none}
+    .spec td:first-child{font-weight:600;color:var(--graphite)}
+    .spec td{color:#54504a}
+    .txtbox{background:var(--white);border-radius:8px;box-shadow:var(--shadow-sm);padding:18px 20px;margin-top:16px;position:relative}
+    .txtbox .lbl{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze);font-weight:700;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .txtbox .cnt{color:var(--muted);letter-spacing:.04em;text-transform:none;font-weight:600}
+    .txtbox .cnt.over{color:#9c3b3b}
+    .txtbox pre{font-family:var(--sans);white-space:pre-wrap;word-break:break-word;font-size:.95rem;line-height:1.6;color:var(--graphite);margin-top:8px}
+    .txtbox .copy{position:absolute;top:12px;right:14px;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bronze);border:1px solid color-mix(in srgb,var(--bronze) 30%,transparent);border-radius:100px;padding:.35em .8em;background:var(--white)}
+    .txtbox .copy:hover{background:var(--btn-grad);color:#fff;border-color:transparent}
+    .note{background:var(--ivory);border-left:3px solid var(--brown);padding:14px 18px;border-radius:var(--radius);font-size:.88rem;color:#54504a;line-height:1.6;margin-top:18px}
+    .note.warn{border-left-color:#9c3b3b}
+    .subh{font-family:var(--sans);font-weight:700;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bronze);margin:30px 0 4px}
+    .kit-foot{padding:40px 0 60px;font-size:.8rem;color:var(--muted)}
+    .kit-foot a{color:var(--bronze);text-decoration:underline}
+    .kit-foot ul{padding-left:1.2em}.kit-foot li{list-style:disc;margin-bottom:4px}
+    .lock{font-size:.74rem;color:var(--muted);text-decoration:underline;cursor:pointer;background:none;border:none}
+    @media (max-width:620px){.spec{font-size:.84rem}.spec th,.spec td{padding:10px}}
+  </style>
+</head>
+<body>
+
+<!-- ============================ PIN GATE ============================ -->
+<section class="pin-screen" id="gate">
+  <form class="pin-card" id="pin-form" autocomplete="off">
+    <img class="mark" src="assets/img/ledijazz-logo.svg" alt="" />
+    <span class="kicker center">Бренд-кит</span>
+    <h1>Материалы для соцсетей</h1>
+    <p>Введите PIN-код — после последней цифры откроется доступ.</p>
+    <label for="pin-input" class="pin-boxes" id="boxes">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </label>
+    <input id="pin-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autofocus />
+    <div class="pin-msg" id="pin-msg" role="status"></div>
+  </form>
+</section>
+
+<!-- ============================ KIT ============================ -->
+<main class="kit" id="kit">
+  <section class="kit-hero grain">
+    <div class="container">
+      <span class="kicker">Бренд-кит · соцсети и мессенджеры</span>
+      <h1 class="title" style="font-size:clamp(2.2rem,6vw,4rem);margin:.2em 0 .3em">Материалы LEDI JAZZ</h1>
+      <p class="lead">Готовые обложки, аватары и тексты под каждый сервис — в точных размерах и с учётом безопасных зон. Ниже у каждого сервиса: что и куда загружать, лимиты текста и готовые описания. Страница будет пополняться.</p>
+      <p style="margin-top:14px"><button class="lock" id="lock">Закрыть доступ</button></p>
+    </div>
+  </section>
+
+  <nav class="kit-nav"><div class="container">
+    <a href="#universal">Общие тексты</a><a href="#vk">ВКонтакте</a><a href="#tg">Telegram</a><a href="#max">MAX</a><a href="#ok">Одноклассники</a><a href="#ig">Instagram*</a><a href="#sources">Источники</a>
+  </div></nav>
+
+  <!-- ---------- UNIVERSAL ---------- -->
+  <section class="svc" id="universal"><div class="container">
+    <div class="svc-head"><div class="svc-ico" style="background:var(--btn-grad)">LJ</div><h2>Общие тексты бренда</h2></div>
+    <p class="lead">Заготовки под лимиты разных сервисов. Счётчик показывает длину — следите, чтобы не превысить лимит нужного сервиса (указан рядом).</p>
+
+    <div class="txtbox"><div class="lbl">Название <span class="cnt" data-limit="27">—</span></div><pre>LEDI JAZZ</pre><button class="copy" type="button">Копировать</button></div>
+    <div class="txtbox"><div class="lbl">Название расширенное · до 32 симв. (MAX, Telegram-список) <span class="cnt" data-limit="32">—</span></div><pre>LEDI JAZZ · платья 50–64</pre><button class="copy" type="button">Копировать</button></div>
+    <div class="txtbox"><div class="lbl">Слоган <span class="cnt">—</span></div><pre>Я живу в своём ритме</pre><button class="copy" type="button">Копировать</button></div>
+    <div class="txtbox"><div class="lbl">Короткое описание · до 70 симв. (статус, bio) <span class="cnt" data-limit="70">—</span></div><pre>Платья-флюид для дома, отдыха и путешествий. Размеры 50–64.</pre><button class="copy" type="button">Копировать</button></div>
+    <div class="txtbox"><div class="lbl">Описание · до 150 симв. (Instagram bio) <span class="cnt" data-limit="150">—</span></div><pre>Премиальные платья-флюид для женщин с формами. Размеры 50–64.
+Дом · отдых · путешествия. Заказ на сайте без предоплаты ↓</pre><button class="copy" type="button">Копировать</button></div>
+    <div class="txtbox"><div class="lbl">Описание · до 255 симв. (Telegram, MAX) <span class="cnt" data-limit="255">—</span></div><pre>LEDI JAZZ — премиальная одежда-флюид для женщин 45+ с формами. Размеры 50–64. Мягкие струящиеся ткани, свобода движения и джазовый ритм в каждом образе. Платья для дома, отдыха и путешествий. Заказ на сайте, самовывоз или доставка по России.</pre><button class="copy" type="button">Копировать</button></div>
+    <div class="txtbox"><div class="lbl">Описание полное · первые 600 симв. видны сразу (ВКонтакте, Одноклассники) <span class="cnt" data-limit="600">—</span></div><pre>LEDI JAZZ — премиальная одежда-флюид для женщин, которые знают себе цену.
+
+✨ Размеры 50–64 — два ряда: Size 1 (50–56) и Size 2 (58–64)
+✨ Мягкие струящиеся ткани: вискоза, шёлк, лён, модал, шифон
+✨ Платья и комплекты для дома, отдыха, путешествий и вечера
+✨ Каждый заказ — в фирменной упаковке с открыткой и QR-плейлистом
+
+Философия бренда — джаз: импровизация, свобода и внутренний ритм. «Платье-флюид» не сковывает — оно живёт вместе с вами.
+
+Заказ на сайте без предоплаты: самовывоз или доставка по всей России. Напишите нам — поможем подобрать размер.
+
+Я живу в своём ритме.</pre><button class="copy" type="button">Копировать</button></div>
+    <div class="txtbox"><div class="lbl">Хэштеги <span class="cnt">—</span></div><pre>#ledijazz #ледиджаз #платьефлюид #одеждафлюид #платья5064 #plussize #одеждабольшихразмеров #платьядлядома #платьядляотдыха #платьядляпутешествий #женщиныпосле45 #элегантность #яживувсвоёмритме</pre><button class="copy" type="button">Копировать</button></div>
+  </div></section>
+
+  <!-- ---------- VK ---------- -->
+  <section class="svc" id="vk"><div class="container">
+    <div class="svc-head"><div class="svc-ico" style="background:#0077FF">VK</div><h2>ВКонтакте — сообщество</h2></div>
+    <p class="lead">Загружать: Управление → Настройки → Обложка сообщества / Главная фотография. Живая обложка — там же, раздел «Живая обложка» (до 5 вертикальных картинок или видео).</p>
+    <div class="grid">
+      <div class="asset"><div class="prev"><img src="assets/brand/vk/cover-1590x530.jpg" alt=""></div><div class="b"><span class="sz">1590 × 530</span><div class="t">Обложка сообщества</div><div class="d">Текст и лицо — внутри безопасной зоны 1196×400 (центр): на мобильных обложка обрезается по краям.</div><a class="btn btn-gold" download href="assets/brand/vk/cover-1590x530.jpg">Скачать JPG</a></div></div>
+      <div class="asset"><div class="prev"><img class="tall" src="assets/brand/vk/live-cover-1080x1920.jpg" alt=""></div><div class="b"><span class="sz">1080 × 1920</span><div class="t">Живая обложка (мобильная)</div><div class="d">Вертикальный формат. Важное держим вне верхних и нижних 200 px — там интерфейс.</div><a class="btn btn-gold" download href="assets/brand/vk/live-cover-1080x1920.jpg">Скачать JPG</a></div></div>
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/vk/avatar-dark-1000x1000.png" alt=""></div><div class="b"><span class="sz">1000 × 1000</span><div class="t">Аватар (тёмный) — основной</div><div class="d">Минимум 400×400, показывается кругом. Тёмный лучше читается в ленте.</div><a class="btn btn-gold" download href="assets/brand/vk/avatar-dark-1000x1000.png">Скачать PNG</a></div></div>
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/vk/avatar-light-1000x1000.png" alt=""></div><div class="b"><span class="sz">1000 × 1000</span><div class="t">Аватар (светлый) — запасной</div><div class="d">В стиле главной страницы сайта.</div><a class="btn btn-gold" download href="assets/brand/vk/avatar-light-1000x1000.png">Скачать PNG</a></div></div>
+    </div>
+    <table class="spec"><thead><tr><th>Поле</th><th>Требование</th><th>Наша заготовка</th></tr></thead><tbody>
+      <tr><td>Обложка</td><td>1590×530 или 1920×768, JPG/PNG, до 50 МБ; безопасная зона 1196×400</td><td>cover-1590x530.jpg</td></tr>
+      <tr><td>Живая обложка</td><td>1080×1920, до 5 шт., отступы ≥200 px сверху/снизу</td><td>live-cover-1080x1920.jpg</td></tr>
+      <tr><td>Аватар</td><td>квадрат ≥400×400, показывается кругом</td><td>avatar-dark-1000x1000.png</td></tr>
+      <tr><td>Название</td><td>до 48 символов</td><td>«LEDI JAZZ» или «LEDI JAZZ · платья 50–64»</td></tr>
+      <tr><td>Статус</td><td>короткая строка под названием (ориентир ≤ 100 симв.)</td><td>короткое описание (70)</td></tr>
+      <tr><td>Описание</td><td>до 4000 симв., без клика видны первые ~600</td><td>описание полное (600)</td></tr>
+      <tr><td>Посты</td><td>1080×1080 · 1080×1350 · 1200×800; истории 1080×1920</td><td>ig/post-1080x1350.jpg подходит</td></tr>
+    </tbody></table>
+  </div></section>
+
+  <!-- ---------- TELEGRAM ---------- -->
+  <section class="svc" id="tg"><div class="container">
+    <div class="svc-head"><div class="svc-ico" style="background:#27A7E7">TG</div><h2>Telegram — канал</h2></div>
+    <p class="lead">У канала нет обложки — «лицо» канала это аватар, описание и закреплённый пост. Мы даём аватар, картинку для закрепа-приветствия и вертикальную историю.</p>
+    <div class="grid">
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/tg/avatar-1000x1000.png" alt=""></div><div class="b"><span class="sz">1000 × 1000</span><div class="t">Аватар канала</div><div class="d">Рекомендуемый 640×640, до 10 МБ, показывается кругом.</div><a class="btn btn-gold" download href="assets/brand/tg/avatar-1000x1000.png">Скачать PNG</a></div></div>
+      <div class="asset"><div class="prev"><img src="assets/brand/tg/post-1280x720.jpg" alt=""></div><div class="b"><span class="sz">1280 × 720</span><div class="t">Картинка для закреплённого поста</div><div class="d">Формат 16:9 — целиком видна в ленте и в превью ссылки.</div><a class="btn btn-gold" download href="assets/brand/tg/post-1280x720.jpg">Скачать JPG</a></div></div>
+      <div class="asset"><div class="prev"><img class="tall" src="assets/brand/tg/story-1080x1920.jpg" alt=""></div><div class="b"><span class="sz">1080 × 1920</span><div class="t">История канала</div><div class="d">Истории доступны каналам с бустами.</div><a class="btn btn-gold" download href="assets/brand/tg/story-1080x1920.jpg">Скачать JPG</a></div></div>
+    </div>
+    <table class="spec"><thead><tr><th>Поле</th><th>Требование</th><th>Наша заготовка</th></tr></thead><tbody>
+      <tr><td>Название</td><td>до 128 символов (в списке чатов видно ~25–30)</td><td>«LEDI JAZZ · платья 50–64»</td></tr>
+      <tr><td>Описание</td><td>до 255 символов</td><td>описание 255</td></tr>
+      <tr><td>Ссылка (username)</td><td>5–32 символа, латиница, цифры, «_»</td><td>@ledijazz</td></tr>
+      <tr><td>Пост</td><td>текст 4096 симв.; подпись к фото 1024 (Premium 4096)</td><td>—</td></tr>
+      <tr><td>Аватар</td><td>квадрат, 640×640 рекомендуется, до 10 МБ</td><td>avatar-1000x1000.png</td></tr>
+    </tbody></table>
+    <div class="txtbox"><div class="lbl">Закреплённый пост-приветствие <span class="cnt" data-limit="1024">—</span></div><pre>Добро пожаловать в LEDI JAZZ 🎷
+
+Мы шьём платья-флюид для женщин с формами — размеры 50–64. Мягкие ткани, свободный крой и джазовое настроение в каждом образе.
+
+👗 Коллекции: дом · отдых · путешествия · вечер
+📦 Заказ на сайте без предоплаты, самовывоз или доставка по России
+🎵 В каждой посылке — открытка с QR-плейлистом
+
+Каталог и заказ: ledijazz.ru
+Подобрать размер — напишите нам в сообщения канала.
+
+Я живу в своём ритме.</pre><button class="copy" type="button">Копировать</button></div>
+  </div></section>
+
+  <!-- ---------- MAX ---------- -->
+  <section class="svc" id="max"><div class="container">
+    <div class="svc-head"><div class="svc-ico" style="background:#3F2ABB">MAX</div><h2>MAX — канал</h2></div>
+    <p class="lead">Публичный канал в MAX создаётся через Платформу для партнёров (доступно ИП и самозанятым). Приватный — из приложения. Загружать: настройки канала → Аватар / Обложка / Описание.</p>
+    <div class="grid">
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/max/avatar-1000x1000.png" alt=""></div><div class="b"><span class="sz">1000 × 1000</span><div class="t">Аватар канала</div><div class="d">Требование MAX: квадрат, от 512×512.</div><a class="btn btn-gold" download href="assets/brand/max/avatar-1000x1000.png">Скачать PNG</a></div></div>
+      <div class="asset"><div class="prev"><img src="assets/brand/max/cover-1590x530.jpg" alt=""></div><div class="b"><span class="sz">1590 × 530</span><div class="t">Обложка канала (универсальная)</div><div class="d">MAX не публикует точный размер обложки. Даём горизонтальную 3:1 с ключевым содержимым по центру — при обрезке ничего важного не теряется.</div><a class="btn btn-gold" download href="assets/brand/max/cover-1590x530.jpg">Скачать JPG</a></div></div>
+    </div>
+    <table class="spec"><thead><tr><th>Поле</th><th>Требование</th><th>Наша заготовка</th></tr></thead><tbody>
+      <tr><td>Название</td><td>до 32 символов</td><td>«LEDI JAZZ · платья 50–64» (24)</td></tr>
+      <tr><td>Описание</td><td>лимит официально не опубликован — используем ≤ 255</td><td>описание 255</td></tr>
+      <tr><td>Аватар</td><td>квадрат, от 512×512</td><td>avatar-1000x1000.png</td></tr>
+      <tr><td>Обложка</td><td>размер официально не опубликован</td><td>cover-1590x530.jpg, важное — по центру</td></tr>
+      <tr><td>Красивая ссылка</td><td>доступна публичным каналам</td><td>max.ru/ledijazz</td></tr>
+    </tbody></table>
+    <div class="note">После загрузки обложки в MAX проверьте на телефоне, не срезался ли текст. Если срезается — напишите, соберём под фактический размер.</div>
+  </div></section>
+
+  <!-- ---------- OK ---------- -->
+  <section class="svc" id="ok"><div class="container">
+    <div class="svc-head"><div class="svc-ico" style="background:#EE8208">OK</div><h2>Одноклассники — группа</h2></div>
+    <p class="lead">У ОК две обложки: для компьютера и отдельная для мобильного приложения. Загружать: Настройки группы → Обложка (десктоп) и Мобильная обложка.</p>
+    <div class="grid">
+      <div class="asset"><div class="prev"><img src="assets/brand/ok/cover-1944x600.jpg" alt=""></div><div class="b"><span class="sz">1944 × 600</span><div class="t">Обложка (компьютер)</div><div class="d">Текст — в центральной зоне 980×240, как рекомендует ОК.</div><a class="btn btn-gold" download href="assets/brand/ok/cover-1944x600.jpg">Скачать JPG</a></div></div>
+      <div class="asset"><div class="prev"><img src="assets/brand/ok/cover-mobile-1024x768.jpg" alt=""></div><div class="b"><span class="sz">1024 × 768</span><div class="t">Мобильная обложка</div><div class="d">Отдельный файл 4:3 для приложения.</div><a class="btn btn-gold" download href="assets/brand/ok/cover-mobile-1024x768.jpg">Скачать JPG</a></div></div>
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/ok/avatar-1000x1000.png" alt=""></div><div class="b"><span class="sz">1000 × 1000</span><div class="t">Главное фото группы</div><div class="d">Рекомендация ОК: 400×400 и больше.</div><a class="btn btn-gold" download href="assets/brand/ok/avatar-1000x1000.png">Скачать PNG</a></div></div>
+      <div class="asset"><div class="prev"><img class="tall" src="assets/brand/ok/story-1080x1920.jpg" alt=""></div><div class="b"><span class="sz">1080 × 1920</span><div class="t">Момент (история)</div><div class="d">Вертикальный формат.</div><a class="btn btn-gold" download href="assets/brand/ok/story-1080x1920.jpg">Скачать JPG</a></div></div>
+    </div>
+    <table class="spec"><thead><tr><th>Поле</th><th>Требование</th><th>Наша заготовка</th></tr></thead><tbody>
+      <tr><td>Обложка</td><td>1944×600 (JPG/PNG/GIF); можно динамическую — до 10 картинок</td><td>cover-1944x600.jpg</td></tr>
+      <tr><td>Мобильная обложка</td><td>1024×768</td><td>cover-mobile-1024x768.jpg</td></tr>
+      <tr><td>Главное фото</td><td>от 400×400</td><td>avatar-1000x1000.png</td></tr>
+      <tr><td>Название</td><td>до 48 символов</td><td>«LEDI JAZZ · платья 50–64»</td></tr>
+      <tr><td>Описание</td><td>официальный лимит не опубликован; важное — в первых двух строках</td><td>описание полное (600)</td></tr>
+      <tr><td>Посты</td><td>1080×1080 или 900×600; моменты 1080×1920</td><td>ig/post-1080x1350.jpg / story</td></tr>
+    </tbody></table>
+  </div></section>
+
+  <!-- ---------- INSTAGRAM ---------- -->
+  <section class="svc" id="ig"><div class="container">
+    <div class="svc-head"><div class="svc-ico" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">IG</div><h2>Instagram* — профиль</h2></div>
+    <p class="lead">Обложки в Instagram нет. Профиль оформляют аватар, bio (150 символов) и обложки актуальных (highlights). Даём аватар, 4 обложки актуальных, историю и пост 4:5.</p>
+    <div class="grid">
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/ig/avatar-1000x1000.png" alt=""></div><div class="b"><span class="sz">1000 × 1000</span><div class="t">Аватар</div><div class="d">Минимум 320×320, показывается кругом.</div><a class="btn btn-gold" download href="assets/brand/ig/avatar-1000x1000.png">Скачать PNG</a></div></div>
+      <div class="asset"><div class="prev"><img class="tall" src="assets/brand/ig/post-1080x1350.jpg" alt=""></div><div class="b"><span class="sz">1080 × 1350</span><div class="t">Пост 4:5</div><div class="d">Самый заметный формат в ленте.</div><a class="btn btn-gold" download href="assets/brand/ig/post-1080x1350.jpg">Скачать JPG</a></div></div>
+      <div class="asset"><div class="prev"><img class="tall" src="assets/brand/ig/story-1080x1920.jpg" alt=""></div><div class="b"><span class="sz">1080 × 1920</span><div class="t">История</div><div class="d">Важное — вне верхних/нижних 250 px.</div><a class="btn btn-gold" download href="assets/brand/ig/story-1080x1920.jpg">Скачать JPG</a></div></div>
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/ig/highlight-kollekcii-1080x1920.png" alt=""></div><div class="b"><span class="sz">1080 × 1920</span><div class="t">Актуальное «Коллекции»</div><div class="d">Иконка по центру — Instagram вырезает круг из середины.</div><a class="btn btn-gold" download href="assets/brand/ig/highlight-kollekcii-1080x1920.png">Скачать PNG</a></div></div>
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/ig/highlight-otzyvy-1080x1920.png" alt=""></div><div class="b"><span class="sz">1080 × 1920</span><div class="t">Актуальное «Отзывы»</div><div class="d">&nbsp;</div><a class="btn btn-gold" download href="assets/brand/ig/highlight-otzyvy-1080x1920.png">Скачать PNG</a></div></div>
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/ig/highlight-kak-zakazat-1080x1920.png" alt=""></div><div class="b"><span class="sz">1080 × 1920</span><div class="t">Актуальное «Как заказать»</div><div class="d">&nbsp;</div><a class="btn btn-gold" download href="assets/brand/ig/highlight-kak-zakazat-1080x1920.png">Скачать PNG</a></div></div>
+      <div class="asset"><div class="prev"><img class="round" src="assets/brand/ig/highlight-razmery-1080x1920.png" alt=""></div><div class="b"><span class="sz">1080 × 1920</span><div class="t">Актуальное «Размеры»</div><div class="d">&nbsp;</div><a class="btn btn-gold" download href="assets/brand/ig/highlight-razmery-1080x1920.png">Скачать PNG</a></div></div>
+    </div>
+    <table class="spec"><thead><tr><th>Поле</th><th>Требование</th><th>Наша заготовка</th></tr></thead><tbody>
+      <tr><td>Имя</td><td>до 30 символов</td><td>«LEDI JAZZ · платья 50–64»</td></tr>
+      <tr><td>Username</td><td>до 30 символов</td><td>ledijazz</td></tr>
+      <tr><td>Bio</td><td>до 150 символов</td><td>описание 150</td></tr>
+      <tr><td>Подпись к посту</td><td>до 2200 символов, видны первые 125; до 30 хэштегов</td><td>хэштеги</td></tr>
+      <tr><td>Аватар</td><td>квадрат ≥320×320</td><td>avatar-1000x1000.png</td></tr>
+      <tr><td>Актуальные</td><td>1080×1920, иконка в центральном квадрате 1080×1080</td><td>highlight-*.png</td></tr>
+    </tbody></table>
+    <div class="note warn">*Instagram — продукт компании Meta, признанной в РФ экстремистской организацией; её деятельность на территории РФ запрещена. Материалы даны для аудитории вне РФ.</div>
+  </div></section>
+
+  <!-- ---------- SOURCES ---------- -->
+  <section class="kit-foot" id="sources"><div class="container">
+    <p class="subh">Источники требований (проверено в сентябре 2026)</p>
+    <ul>
+      <li>ВКонтакте: <a href="https://postium.ru/gajd-po-razmeram-vk/" target="_blank" rel="noopener">гайд по размерам ВК</a>, <a href="https://karuselin.ru/blog/razmer-oblozhki-vk" target="_blank" rel="noopener">размер обложки ВК</a></li>
+      <li>Одноклассники: <a href="https://ok.ru/group/50476261114004/topic/158910583425940" target="_blank" rel="noopener">официальная группа «Авторы в ОК»</a></li>
+      <li>Telegram: <a href="https://limits.tginfo.me/en" target="_blank" rel="noopener">лимиты Telegram</a>, <a href="https://perfluence.net/blog/article/optimalnye-razmery-dlya-kontenta-v-telegram" target="_blank" rel="noopener">размеры контента</a></li>
+      <li>MAX: <a href="https://postmypost.io/ru/resources/kak-sozdat-kanal-v-max-v-2026-godu/" target="_blank" rel="noopener">создание канала в MAX</a>, <a href="https://mxstat.ru/articles/kanaly-v-prilozhenii-max-polnoe-rukovodstvo" target="_blank" rel="noopener">руководство по каналам</a></li>
+      <li>Instagram: <a href="https://buffer.com/resources/instagram-image-size/" target="_blank" rel="noopener">размеры изображений</a>, <a href="https://www.outfy.com/blog/instagram-character-limit/" target="_blank" rel="noopener">лимиты символов</a></li>
+    </ul>
+    <p style="margin-top:18px">Все материалы собраны из фирменного логотипа, шрифтов и ваших фотографий. Исходники и шаблоны — в репозитории сайта.</p>
+  </div></section>
+</main>
+
+<script>
+(function(){
+  var HASH="481f6cc0511143ccdd7e2d1b1b94faf0a700a8b49cd13922a70b5ae28acaa8c5"; // SHA-256 от PIN — сам PIN в коде не хранится
+  var gate=document.getElementById('gate'), kit=document.getElementById('kit'),
+      input=document.getElementById('pin-input'), boxes=document.getElementById('boxes'),
+      spans=boxes.querySelectorAll('span'), msg=document.getElementById('pin-msg');
+  function sha256(str){var enc=new TextEncoder().encode(str);return crypto.subtle.digest('SHA-256',enc).then(function(buf){
+    return Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2)}).join('');});}
+  function unlock(){gate.style.display='none';kit.classList.add('show');try{sessionStorage.setItem('lj_kit','1')}catch(e){}window.scrollTo(0,0);initKit();}
+  function render(){var v=input.value;spans.forEach(function(s,i){s.textContent=v[i]?'•':'';s.classList.toggle('filled',!!v[i]);s.classList.toggle('active',i===v.length);});}
+  function check(){var v=input.value;if(v.length<6)return;
+    sha256(v).then(function(h){if(h===HASH){unlock();}else{boxes.classList.add('err');msg.textContent='Неверный PIN. Попробуйте ещё раз.';setTimeout(function(){boxes.classList.remove('err');input.value='';render();},450);}});}
+  input.addEventListener('input',function(){input.value=input.value.replace(/\D/g,'').slice(0,6);msg.textContent='';render();if(input.value.length===6)check();});
+  boxes.addEventListener('click',function(){input.focus();});
+  document.getElementById('pin-form').addEventListener('submit',function(e){e.preventDefault();check();});
+  document.addEventListener('click',function(){if(gate.style.display!=='none')input.focus();},{once:true});
+  render(); input.focus();
+  try{if(sessionStorage.getItem('lj_kit')==='1')unlock();}catch(e){}
+  document.getElementById('lock').addEventListener('click',function(){try{sessionStorage.removeItem('lj_kit')}catch(e){}location.reload();});
+
+  var inited=false;
+  function initKit(){ if(inited)return; inited=true;
+    document.querySelectorAll('.txtbox').forEach(function(box){
+      var pre=box.querySelector('pre'), cnt=box.querySelector('.cnt'), btn=box.querySelector('.copy');
+      var n=Array.from(pre.textContent).length, lim=cnt.getAttribute('data-limit');
+      cnt.textContent=lim?(n+' / '+lim):(n+' симв.'); if(lim&&n>+lim)cnt.classList.add('over');
+      btn.addEventListener('click',function(){
+        var done=function(){btn.textContent='Скопировано ✓';setTimeout(function(){btn.textContent='Копировать'},1600);};
+        if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(pre.textContent).then(done).catch(function(){legacy();});}else{legacy();}
+        function legacy(){var r=document.createRange();r.selectNode(pre);var s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');done();}catch(e){}s.removeAllRanges();}
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
