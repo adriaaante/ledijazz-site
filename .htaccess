@@ -4,8 +4,9 @@ RewriteEngine On
 
 # 1. Все прочие домены и www → основной домен ledijazz.ru
 #    (ledijazz.com, ледиджаз.рф, www.ledijazz.ru и любые алиасы)
+#    ПОСЛЕ выпуска SSL замените http:// на https:// в строке ниже.
 RewriteCond %{HTTP_HOST} !^ledijazz\.ru$ [NC]
-RewriteRule ^(.*)$ https://ledijazz.ru/$1 [R=301,L]
+RewriteRule ^(.*)$ http://ledijazz.ru/$1 [R=301,L]
 
 # 2. http → https.
 #    ВКЛЮЧИТЬ ПОСЛЕ выпуска SSL-сертификата (ISPmanager → WWW-домены →
