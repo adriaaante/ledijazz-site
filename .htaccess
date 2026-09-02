@@ -29,3 +29,9 @@ AddDefaultCharset UTF-8
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
 </IfModule>
+
+# 4. Служебные файлы автодеплоя — закрыть от посетителей
+RedirectMatch 404 ^/\.deploy-tmp(/|$)
+<FilesMatch "^(deploy\.log|\.github-token)$">
+  Require all denied
+</FilesMatch>
