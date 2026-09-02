@@ -1,13 +1,17 @@
-# Автодеплой сайта на хостинг REG.RU по FTP.
+# Автодеплой сайта на хостинг REG.RU.
 # Запускается при каждом push в main и вручную (Actions → Deploy → Run workflow).
 #
-# Нужные секреты (Settings → Secrets and variables → Actions → New repository secret):
-#   FTP_HOST      — адрес FTP-сервера хостинга, напр. sm30.hosting.reg.ru
+# Секреты (Settings → Secrets and variables → Actions → Secrets):
+#   FTP_HOST      — сервер хостинга, напр. sm30.hosting.reg.ru
 #   FTP_USER      — логин хостинга, напр. u3534471
 #   FTP_PASSWORD  — пароль хостинга
-# Необязательные переменные (вкладка Variables):
-#   FTP_SERVER_DIR — папка сайта на сервере (по умолчанию /www/ledijazz.ru/)
-#   FTP_PROTOCOL   — ftp | ftps (по умолчанию ftp)
+#
+# Переменные (вкладка Variables) — все необязательные:
+#   DEPLOY_METHOD  — sftp (по умолчанию) | ftp | ftps
+#   DEPLOY_PATH    — папка сайта на сервере (по умолчанию www/ledijazz.ru)
+#   DEPLOY_PORT    — порт SFTP (по умолчанию 22)
+#
+# Простой FTP (порт 21) на shared-хостинге REG.RU закрыт, поэтому по умолчанию SFTP.
 
 name: Deploy to hosting
 
@@ -23,22 +27,66 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      METHOD: ${{ vars.DEPLOY_METHOD || 'sftp' }}
+      SITE_PATH: ${{ vars.DEPLOY_PATH || 'www/ledijazz.ru' }}
+      SSH_PORT: ${{ vars.DEPLOY_PORT || '22' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Upload via FTP
+      - name: Собрать чистую папку для выкладки
+        run: |
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git/' --exclude='.github/' --exclude='.claude/' \
+            --exclude='_site/' --exclude='*.md' \
+            ./ _site/
+          echo "Файлов к выкладке: $(find _site -type f | wc -l)"
+
+      # ---------- SFTP (по умолчанию) ----------
+      - name: Диагностика доступа и путей на сервере
+        if: env.METHOD == 'sftp'
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
+          script: |
+            echo "== домашняя папка =="; echo "HOME=$HOME"; pwd
+            echo "== содержимое дома =="; ls -la "$HOME" 2>/dev/null | head -30
+            echo "== папки сайтов =="
+            for d in "$HOME/www" "$HOME/data/www" /var/www/$USER/data/www; do
+              [ -d "$d" ] && { echo "НАЙДЕНО: $d"; ls -la "$d"; }
+            done
+            echo "== создаю папку сайта =="
+            mkdir -p "$HOME/${{ env.SITE_PATH }}" && echo "OK: $HOME/${{ env.SITE_PATH }}"
+
+      - name: Выложить по SFTP
+        if: env.METHOD == 'sftp'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
+          source: "_site/*"
+          target: ${{ env.SITE_PATH }}
+          strip_components: 1
+          overwrite: true
+          timeout: 120s
+          command_timeout: 20m
+
+      # ---------- FTP / FTPS (запасной вариант) ----------
+      - name: Выложить по FTP
+        if: env.METHOD == 'ftp' || env.METHOD == 'ftps'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ vars.FTP_PROTOCOL || 'ftp' }}
-          server-dir: ${{ vars.FTP_SERVER_DIR || '/www/ledijazz.ru/' }}
-          local-dir: ./
-          exclude: |
-            **/.git*
-            **/.git*/**
-            .github/**
-            **/*.md
-            .claude/**
+          protocol: ${{ env.METHOD }}
+          server-dir: /${{ env.SITE_PATH }}/
+          local-dir: ./_site/
