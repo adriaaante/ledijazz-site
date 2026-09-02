@@ -45,10 +45,10 @@ jobs:
             printf '%-42s HTTP %s  %s\n' "$p" "$code" "$title"
             [ "$code" = "200" ] || fail=1
           done
-          echo "--- редиректы ---"
-          for h in www.ledijazz.ru ledijazz.com; do
-            printf '%-18s ' "$h"; curl -sS -o /dev/null -w 'HTTP %{http_code} → %{redirect_url}\n' --max-time 30 -H "Host: $h" "$base/" || true
-          done
+          echo "--- редиректы на основной домен ---"
+          printf '%-28s ' 'http://ledijazz.ru'; curl -sS -o /dev/null -w 'HTTP %{http_code} → %{redirect_url}\n' --max-time 30 http://ledijazz.ru/ || true
+          printf '%-28s ' 'https://www.ledijazz.ru'; curl -sS -o /dev/null -w 'HTTP %{http_code} → %{redirect_url}\n' --max-time 30 https://www.ledijazz.ru/ || true
+          printf '%-28s ' 'http://www.ledijazz.ru'; curl -sS -o /dev/null -w 'HTTP %{http_code} → %{redirect_url}\n' --max-time 30 http://www.ledijazz.ru/ || true
           [ $fail = 0 ] || { echo "::error::Часть страниц не отдаётся"; exit 1; }
 
       - name: SSL и HTTPS (информационно)

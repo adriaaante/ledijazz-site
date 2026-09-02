@@ -4,17 +4,13 @@ RewriteEngine On
 
 # 1. Все прочие домены и www → основной домен ledijazz.ru
 #    (ledijazz.com, ледиджаз.рф, www.ledijazz.ru и любые алиасы)
-#    ПОСЛЕ выпуска SSL замените http:// на https:// в строке ниже.
 RewriteCond %{HTTP_HOST} !^ledijazz\.ru$ [NC]
-RewriteRule ^(.*)$ http://ledijazz.ru/$1 [R=301,L]
+RewriteRule ^(.*)$ https://ledijazz.ru/$1 [R=301,L]
 
-# 2. http → https.
-#    ВКЛЮЧИТЬ ПОСЛЕ выпуска SSL-сертификата (ISPmanager → WWW-домены →
-#    ledijazz.ru → SSL → Let's Encrypt): уберите «# » в трёх строках ниже.
-#    Если включить раньше — сайт перестанет открываться.
-# RewriteCond %{HTTPS} off
-# RewriteCond %{HTTP:X-Forwarded-Proto} !https
-# RewriteRule ^(.*)$ https://ledijazz.ru/$1 [R=301,L]
+# 2. http → https (сертификат Let's Encrypt выпущен 02.09.2026, продлевается сам)
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^(.*)$ https://ledijazz.ru/$1 [R=301,L]
 
 # 3. Кодировка и кэширование статики
 AddDefaultCharset UTF-8
