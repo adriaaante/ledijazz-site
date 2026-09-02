@@ -27,6 +27,11 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Пока доступ по SFTP/FTP к хостингу закрыт, автодеплой выключен,
+    # чтобы каждый коммит не создавал падающую сборку.
+    # Как только доступ откроется — создайте переменную DEPLOY_ENABLED = true
+    # (Settings → Secrets and variables → Actions → Variables), и всё заработает.
+    if: vars.DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
     env:
       METHOD: ${{ vars.DEPLOY_METHOD || 'sftp' }}
       SITE_PATH: ${{ vars.DEPLOY_PATH || 'www/ledijazz.ru' }}
