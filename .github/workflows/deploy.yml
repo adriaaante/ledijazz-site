@@ -2,10 +2,8 @@
 # а тот сам скачивает свежий main с GitHub и раскладывает файлы.
 # Секрет DEPLOY_TOKEN — тот же токен, чей SHA-256 записан в deploy.php.
 # Переменные (необязательно):
-#   DEPLOY_URL  — адрес deploy.php. Пока DNS ledijazz.ru не переведён на
-#                 server126 (37.140.192.213), по умолчанию идём прямо по IP.
-#                 После переноса DNS и выпуска SSL поставьте
-#                 DEPLOY_URL = https://ledijazz.ru/deploy.php
+#   DEPLOY_URL  — адрес deploy.php (по умолчанию http://ledijazz.ru/deploy.php;
+#                 после выпуска SSL — https://ledijazz.ru/deploy.php)
 #   DEPLOY_HOST — заголовок Host для запроса по IP (по умолчанию ledijazz.ru)
 
 name: Deploy to hosting
@@ -25,7 +23,7 @@ jobs:
     steps:
       - name: Попросить сайт обновиться с GitHub
         env:
-          URL: ${{ vars.DEPLOY_URL || 'http://37.140.192.213/deploy.php' }}
+          URL: ${{ vars.DEPLOY_URL || 'http://ledijazz.ru/deploy.php' }}
           HOST: ${{ vars.DEPLOY_HOST || 'ledijazz.ru' }}
           TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         run: |
@@ -38,7 +36,7 @@ jobs:
 
       - name: Проверить, что сайт отдаёт страницы
         env:
-          URL: ${{ vars.DEPLOY_URL || 'http://37.140.192.213/deploy.php' }}
+          URL: ${{ vars.DEPLOY_URL || 'http://ledijazz.ru/deploy.php' }}
           HOST: ${{ vars.DEPLOY_HOST || 'ledijazz.ru' }}
         run: |
           base="${URL%/deploy.php}"; fail=0
@@ -53,3 +51,14 @@ jobs:
             printf '%-18s ' "$h"; curl -sS -o /dev/null -w 'HTTP %{http_code} → %{redirect_url}\n' --max-time 30 -H "Host: $h" "$base/" || true
           done
           [ $fail = 0 ] || { echo "::error::Часть страниц не отдаётся"; exit 1; }
+
+      - name: SSL и HTTPS (информационно)
+        run: |
+          echo "--- https://ledijazz.ru ---"
+          if curl -sS -o /dev/null -w 'HTTPS: HTTP %{http_code}, проверка сертификата=%{ssl_verify_result} (0 = валиден)\n' --max-time 30 https://ledijazz.ru/; then
+            echo | openssl s_client -connect ledijazz.ru:443 -servername ledijazz.ru 2>/dev/null | openssl x509 -noout -issuer -dates | sed 's/^/  /'
+          else
+            echo "HTTPS не отвечает — сертификат ещё не выпущен (ISPmanager → Сайты → ledijazz.ru → SSL → Let's Encrypt)"
+          fi
+          echo "--- IPv6 ---"
+          curl -6 -sS -o /dev/null -w 'IPv6: HTTP %{http_code}\n' --max-time 20 http://ledijazz.ru/ || echo "IPv6: недоступен с раннера (не критично)"
