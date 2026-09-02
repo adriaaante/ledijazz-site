@@ -40,7 +40,7 @@ jobs:
           HOST: ${{ vars.DEPLOY_HOST || 'ledijazz.ru' }}
         run: |
           base="${URL%/deploy.php}"; fail=0
-          for p in / /shop.html /checkout.html /kit.html /assets/css/styles.css /assets/js/shop.js /assets/brand/vk/cover-1590x530.jpg; do
+          for p in / /shop.html /checkout.html /crm.html /assets/css/styles.css /assets/js/shop.js /assets/brand/vk/cover-1590x530.jpg; do
             code=$(curl -sS -o page.bin -w '%{http_code}' --max-time 30 -H "Host: $HOST" "$base$p") || code=000
             title=$(grep -o '<title>[^<]*' page.bin 2>/dev/null | head -1 | sed 's/<title>//')
             printf '%-42s HTTP %s  %s\n' "$p" "$code" "$title"
