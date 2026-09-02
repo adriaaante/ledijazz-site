@@ -35,3 +35,21 @@ jobs:
                  -H "Host: $HOST" -H "X-Deploy-Token: $TOKEN" "$URL") || code=000
           cat resp.txt; echo
           [ "$code" = "200" ] || { echo "::error::deploy.php ответил HTTP $code"; exit 1; }
+
+      - name: Проверить, что сайт отдаёт страницы
+        env:
+          URL: ${{ vars.DEPLOY_URL || 'http://37.140.192.213/deploy.php' }}
+          HOST: ${{ vars.DEPLOY_HOST || 'ledijazz.ru' }}
+        run: |
+          base="${URL%/deploy.php}"; fail=0
+          for p in / /shop.html /checkout.html /kit.html /assets/css/styles.css /assets/js/shop.js /assets/brand/vk/cover-1590x530.jpg; do
+            code=$(curl -sS -o page.bin -w '%{http_code}' --max-time 30 -H "Host: $HOST" "$base$p") || code=000
+            title=$(grep -o '<title>[^<]*' page.bin 2>/dev/null | head -1 | sed 's/<title>//')
+            printf '%-42s HTTP %s  %s\n' "$p" "$code" "$title"
+            [ "$code" = "200" ] || fail=1
+          done
+          echo "--- редиректы ---"
+          for h in www.ledijazz.ru ledijazz.com; do
+            printf '%-18s ' "$h"; curl -sS -o /dev/null -w 'HTTP %{http_code} → %{redirect_url}\n' --max-time 30 -H "Host: $h" "$base/" || true
+          done
+          [ $fail = 0 ] || { echo "::error::Часть страниц не отдаётся"; exit 1; }
