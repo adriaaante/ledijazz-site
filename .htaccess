@@ -2,8 +2,13 @@
 
 RewriteEngine On
 
+# 0. Проверка Let's Encrypt — НЕ перенаправлять, иначе сертификат
+#    для домена не выпустится и не продлится.
+RewriteRule ^\.well-known/acme-challenge/ - [L]
+
 # 1. Все прочие домены и www → основной домен ledijazz.ru
-#    (ledijazz.com, ледиджаз.рф, www.ledijazz.ru и любые алиасы)
+#    (ledijazz.com, ледиджаз.рф, www.ledijazz.ru и любые алиасы).
+#    Путь сохраняется: ledijazz.com/shop.html → ledijazz.ru/shop.html
 RewriteCond %{HTTP_HOST} !^ledijazz\.ru$ [NC]
 RewriteRule ^(.*)$ https://ledijazz.ru/$1 [R=301,L]
 
