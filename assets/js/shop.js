@@ -13,82 +13,74 @@
   var CART_KEY = "ledijazz_cart";
 
   /* ----------------------------------------------------------------------
-     1. КОЛЛЕКЦИИ (разделы)
+     1–2. КАТАЛОГ: коллекции и товары.
+     Редактируются в панели управления (crm.html) и приходят с сервера
+     (api/catalog.php). Если сервер недоступен — используется стартовый
+     каталог из assets/js/catalog-default.js.
      ---------------------------------------------------------------------- */
-  var COLLECTIONS = [
-    { key: "home",    ln: "L · Home",          title: "Дом" },
-    { key: "casual",  ln: "L · Mu",            title: "Повседневность" },
-    { key: "riviera", ln: "L · Riviera",       title: "Ривьера" },
-    { key: "travel",  ln: "L · Travel",        title: "Путешествия" },
-    { key: "evening", ln: "L · Evening Soft",  title: "Мягкий вечер" },
-    { key: "noir",    ln: "L · Noir / Aura",   title: "Нуар" },
-    { key: "silk",    ln: "L · Silk / Mood",   title: "Шёлк" },
-    { key: "linen",   ln: "L · Linen",         title: "Лён" },
-    { key: "limited", ln: "L · Limited",       title: "Лимитированное" }
-  ];
-  var COLL_MAP = {};
-  COLLECTIONS.forEach(function (c) { COLL_MAP[c.key] = c; });
+  var API = "api/catalog.php";
+  var CATALOG_CACHE = "ledijazz_catalog_cache";
+  var DEF = window.LEDIJAZZ_CATALOG_DEFAULT || { collections: [], products: [] };
+  var CATALOG, COLLECTIONS = [], PRODUCTS = [], COLL_MAP = {}, PROD_MAP = {}, SIZES = [];
 
-  var S1 = "Size 1 · 50–56";
-  var S2 = "Size 2 · 58–64";
-  var BOTH = [S1, S2];
+  function normProduct(p) {
+    var q = {};
+    for (var k in p) if (Object.prototype.hasOwnProperty.call(p, k)) q[k] = p[k];
+    q.images = (p.images && p.images.length) ? p.images.slice() : (p.img ? [p.img] : []);
+    q.img = q.images[0] || "";
+    q.sizes = (p.sizes && p.sizes.length) ? p.sizes : [];
+    q.colors = p.colors || [];
+    q.price = Number(p.price) || 0;
+    q.oldPrice = Number(p.oldPrice) > q.price ? Number(p.oldPrice) : 0;
+    if (!q.badge && p.coll === "limited") q.badge = "Лимит";
+    return q;
+  }
+  function applyCatalog(c) {
+    CATALOG = c;
+    COLLECTIONS = (c.collections && c.collections.length) ? c.collections : (DEF.collections || []);
+    COLL_MAP = {}; COLLECTIONS.forEach(function (x) { COLL_MAP[x.key] = x; });
+    PRODUCTS = (c.products || []).filter(function (p) { return !p.hidden; }).map(normProduct);
+    PROD_MAP = {}; PRODUCTS.forEach(function (p) { PROD_MAP[p.id] = p; });
+    // размеры для фильтра — в порядке справочника, только те, что есть у товаров
+    var used = {}; PRODUCTS.forEach(function (p) { p.sizes.forEach(function (s) { used[s] = 1; }); });
+    var order = (c.sizes && c.sizes.length) ? c.sizes : (DEF.sizes || []);
+    SIZES = order.filter(function (s) { return used[s]; });
+    Object.keys(used).forEach(function (s) { if (SIZES.indexOf(s) === -1) SIZES.push(s); });
+  }
+  applyCatalog(DEF);
 
-  /* ----------------------------------------------------------------------
-     2. ТОВАРЫ
-     Чтобы добавить фото товара — укажите поле img: "assets/img/файл.jpg".
-     ---------------------------------------------------------------------- */
-  var PRODUCTS = [
-    // — Дом —
-    { id: "home-utro",   coll: "home",    name: "Платье-флюид «Утро»",      price: 7900,  fabric: "Вискоза, модал", sizes: BOTH, desc: "Мягкое домашнее платье свободного силуэта для неспешных утренних часов." },
-    { id: "home-terrasa",coll: "home",    name: "Комплект «Терраса»",       price: 8900,  fabric: "Трикотаж",       sizes: BOTH, desc: "Уютный комплект из туники и брюк для дома и тёплого вечера на террасе." },
-    { id: "home-noteb",  coll: "home",    name: "Халат-кимоно «Ноктюрн»",   price: 9500,  fabric: "Вискоза",        sizes: BOTH, desc: "Струящийся халат-кимоно с поясом — обволакивающая мягкость и комфорт." },
-
-    // — Повседневность —
-    { id: "casual-ritm", coll: "casual",  name: "Платье «Ритм»",            price: 8400,  fabric: "Трикотаж, вискоза", sizes: BOTH, desc: "Базовое платье-флюид на каждый день: универсальный силуэт, ДНК бренда." },
-    { id: "casual-blues",coll: "casual",  name: "Туника «Блюз»",            price: 6900,  fabric: "Модал",          sizes: BOTH, desc: "Удлинённая туника свободного кроя — основа для множества образов." },
-    { id: "casual-swing",coll: "casual",  name: "Костюм «Свинг»",           price: 11900, fabric: "Трикотаж",       sizes: BOTH, desc: "Мягкий костюм: жакет-кардиган и брюки с эластичным поясом." },
-
-    // — Ривьера —
-    { id: "riv-bereg",   coll: "riviera", name: "Платье «Берег»",           price: 8900,  fabric: "Вискоза",        sizes: BOTH, desc: "Лёгкое платье в пол для прогулок у моря и тёплых городов." },
-    { id: "riv-marina",  coll: "riviera", name: "Сарафан «Марина»",         price: 7900,  fabric: "Лён, вискоза",   sizes: BOTH, desc: "Дышащий сарафан с открытыми плечами — лёгкость южного лета." },
-    { id: "riv-laguna",  coll: "riviera", name: "Платье-рубашка «Лагуна»",  price: 9400,  fabric: "Шифон",          sizes: BOTH, desc: "Воздушное платье-рубашка для жарких дней и вечернего бриза." },
-
-    // — Путешествия —
-    { id: "trv-doroga",  coll: "travel",  name: "Платье «Дорога»",          price: 8600,  fabric: "Трикотаж",       sizes: BOTH, desc: "Немнущееся платье для поездок: комфорт в пути без потери элегантности." },
-    { id: "trv-vokzal",  coll: "travel",  name: "Комплект «Вокзал»",        price: 10900, fabric: "Модал, трикотаж",sizes: BOTH, desc: "Дорожный комплект: лёгкий кардиган, топ и брюки в одной палитре." },
-    { id: "trv-gorod",   coll: "travel",  name: "Платье «Город»",           price: 8200,  fabric: "Вискоза",        sizes: BOTH, desc: "Универсальное платье для прогулок по новым городам." },
-
-    // — Мягкий вечер —
-    { id: "eve-vecher",  coll: "evening", name: "Платье «Вечер»",           price: 9900,  fabric: "Вискоза, шёлк",  sizes: BOTH, desc: "Спокойная вечерняя элегантность для ужина и встреч." },
-    { id: "eve-akkord",  coll: "evening", name: "Платье «Аккорд»",          price: 10900, fabric: "Трикотаж люкс",  sizes: BOTH, desc: "Драпированный силуэт, который красиво струится при движении." },
-    { id: "eve-saksofon",coll: "evening", name: "Платье «Саксофон»",        price: 9600,  fabric: "Шифон",          sizes: BOTH, desc: "Лёгкое многослойное платье для тёплого вечернего выхода." },
-
-    // — Нуар —
-    { id: "noir-aura",   coll: "noir",    name: "Платье «Аура»",            price: 12900, fabric: "Шёлк",           sizes: BOTH, desc: "Глубокий тон и благородная ткань — для особого случая." },
-    { id: "noir-noch",   coll: "noir",    name: "Платье «Полночь»",         price: 13900, fabric: "Бархат, вискоза",sizes: BOTH, desc: "Вечернее платье насыщенного оттенка с мягкой драпировкой." },
-    { id: "noir-ten",    coll: "noir",    name: "Костюм «Тень»",            price: 14900, fabric: "Шёлк, трикотаж", sizes: BOTH, desc: "Элегантный вечерний костюм глубоких тонов." },
-
-    // — Шёлк —
-    { id: "silk-mood",   coll: "silk",    name: "Платье «Mood»",            price: 13900, fabric: "Натуральный шёлк",sizes: BOTH, desc: "Премиальный шёлк для ужина, шоу и торжеств." },
-    { id: "silk-shik",   coll: "silk",    name: "Платье «Шик»",             price: 15900, fabric: "Натуральный шёлк",sizes: BOTH, desc: "Роскошное шёлковое платье с тонким блеском." },
-    { id: "silk-melodia",coll: "silk",    name: "Блуза «Мелодия»",          price: 8900,  fabric: "Шёлк",           sizes: BOTH, desc: "Шёлковая блуза свободного кроя — основа вечернего образа." },
-
-    // — Лён —
-    { id: "lin-leto",    coll: "linen",   name: "Платье «Лето»",            price: 8400,  fabric: "Натуральный лён", sizes: BOTH, desc: "Дышащее льняное платье для жарких дней — натуральный комфорт." },
-    { id: "lin-veter",   coll: "linen",   name: "Костюм «Ветер»",           price: 10900, fabric: "Лён, вискоза",   sizes: BOTH, desc: "Льняной комплект: рубашка и широкие брюки." },
-    { id: "lin-sad",     coll: "linen",   name: "Сарафан «Сад»",            price: 7600,  fabric: "Натуральный лён", sizes: BOTH, desc: "Лёгкий льняной сарафан для города и отдыха." },
-
-    // — Лимитированное —
-    { id: "lim-solo",    coll: "limited", name: "Платье «Соло» (лимит)",    price: 16900, fabric: "Шёлк, кружево",  sizes: BOTH, desc: "Капсульный выпуск: ограниченный тираж, особый крой." },
-    { id: "lim-encore",  coll: "limited", name: "Платье «Encore» (лимит)",  price: 17900, fabric: "Премиум-шёлк",   sizes: BOTH, desc: "Премиальная лимитированная линия для самых особых случаев." }
-  ];
-  var PROD_MAP = {};
-  PRODUCTS.forEach(function (p) { PROD_MAP[p.id] = p; });
+  /** Загружает каталог с сервера; при ошибке остаётся стартовый. */
+  function loadCatalog(done) {
+    var finished = false;
+    function finish(c) { if (finished) return; finished = true; if (c) applyCatalog(c); done(); }
+    var timer = setTimeout(function () { finish(cachedCatalog()); }, 6000);
+    try {
+      fetch(API + "?t=" + Date.now(), { cache: "no-store", credentials: "same-origin" })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (j) {
+          clearTimeout(timer);
+          if (j && j.catalog && j.catalog.products) {
+            try { localStorage.setItem(CATALOG_CACHE, JSON.stringify(j.catalog)); } catch (e) {}
+            finish(j.catalog);
+          } else finish(null);
+        })
+        .catch(function () { clearTimeout(timer); finish(cachedCatalog()); });
+    } catch (e) { clearTimeout(timer); finish(cachedCatalog()); }
+  }
+  function cachedCatalog() {
+    try { var c = JSON.parse(localStorage.getItem(CATALOG_CACHE)); return c && c.products ? c : null; }
+    catch (e) { return null; }
+  }
 
   /* ----------------------------------------------------------------------
      3. УТИЛИТЫ
      ---------------------------------------------------------------------- */
   function money(n) { return Number(n).toLocaleString("ru-RU") + " " + CUR; }
+  function esc(v) {
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
   function el(tag, cls, html) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -96,42 +88,49 @@
     return e;
   }
   function emblem() { return '<img class="p-emblem" src="assets/img/ledijazz-logo.svg" alt="" />'; }
+  function swatchStyle(hex) { return /gradient/.test(hex || "") ? "background:" + hex : "background-color:" + (hex || "#ccc"); }
+  function plural(n, a, b, c) { var m = n % 10, h = n % 100; return (m === 1 && h !== 11) ? a : (m >= 2 && m <= 4 && (h < 10 || h >= 20)) ? b : c; }
 
   /* ----------------------------------------------------------------------
      4. КОРЗИНА (состояние в localStorage)
+     Позиция = товар + размер + цвет.
      ---------------------------------------------------------------------- */
+  function same(i, id, size, color) { return i.id === id && i.size === size && (i.color || "") === (color || ""); }
   function getCart() {
     try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
     catch (e) { return []; }
   }
   function saveCart(c) {
-    localStorage.setItem(CART_KEY, JSON.stringify(c));
+    try { localStorage.setItem(CART_KEY, JSON.stringify(c)); } catch (e) {}
     updateCartButton();
     renderDrawer();
   }
-  function cartCount() { return getCart().reduce(function (s, i) { return s + i.qty; }, 0); }
+  function cartItems() { return getCart().filter(function (i) { return PROD_MAP[i.id]; }); }
+  function cartCount() { return cartItems().reduce(function (s, i) { return s + i.qty; }, 0); }
   function cartTotal() {
-    return getCart().reduce(function (s, i) {
-      var p = PROD_MAP[i.id]; return s + (p ? p.price * i.qty : 0);
-    }, 0);
+    return cartItems().reduce(function (s, i) { return s + PROD_MAP[i.id].price * i.qty; }, 0);
   }
-  function addToCart(id, size) {
+  function addToCart(id, size, color) {
     var c = getCart();
-    var found = c.find(function (i) { return i.id === id && i.size === size; });
+    var found = c.find(function (i) { return same(i, id, size, color); });
     if (found) found.qty += 1;
-    else c.push({ id: id, size: size, qty: 1 });
+    else c.push({ id: id, size: size, color: color || "", qty: 1 });
     saveCart(c);
   }
-  function setQty(id, size, qty) {
+  function setQty(id, size, color, qty) {
     var c = getCart();
-    var i = c.find(function (x) { return x.id === id && x.size === size; });
+    var i = c.find(function (x) { return same(x, id, size, color); });
     if (!i) return;
     i.qty = qty;
-    if (i.qty <= 0) c = c.filter(function (x) { return !(x.id === id && x.size === size); });
+    if (i.qty <= 0) c = c.filter(function (x) { return !same(x, id, size, color); });
     saveCart(c);
   }
-  function removeItem(id, size) {
-    saveCart(getCart().filter(function (x) { return !(x.id === id && x.size === size); }));
+  function removeItem(id, size, color) {
+    saveCart(getCart().filter(function (x) { return !same(x, id, size, color); }));
+  }
+  function lineMeta(i) {
+    var p = PROD_MAP[i.id];
+    return [COLL_MAP[p.coll] ? COLL_MAP[p.coll].title : "", i.size, i.color].filter(Boolean).join(" · ");
   }
 
   /* ----------------------------------------------------------------------
@@ -177,15 +176,15 @@
     document.body.appendChild(drawer);
     overlay.addEventListener("click", closeCart);
     drawer.querySelector(".cart-close").addEventListener("click", closeCart);
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCart(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeCart(); closeQuick(); } });
     renderDrawer();
   }
-  function openCart() { overlay.classList.add("open"); drawer.classList.add("open"); document.body.classList.add("cart-open"); }
-  function closeCart() { overlay.classList.remove("open"); drawer.classList.remove("open"); document.body.classList.remove("cart-open"); }
+  function openCart() { if (!overlay) return; closeQuick(); overlay.classList.add("open"); drawer.classList.add("open"); document.body.classList.add("cart-open"); }
+  function closeCart() { if (!overlay) return; overlay.classList.remove("open"); drawer.classList.remove("open"); document.body.classList.remove("cart-open"); }
 
   function renderDrawer() {
     if (!drawer) return;
-    var items = getCart();
+    var items = cartItems();
     var box = drawer.querySelector(".cart-items");
     var foot = drawer.querySelector(".cart-foot");
     box.innerHTML = "";
@@ -197,23 +196,23 @@
       return;
     }
     items.forEach(function (i) {
-      var p = PROD_MAP[i.id]; if (!p) return;
+      var p = PROD_MAP[i.id];
       var line = el("div", "cart-line");
       line.innerHTML =
         '<div class="thumb">' + (p.img ? '' : emblem()) + '</div>' +
         '<div class="ci-info">' +
-          '<div class="ci-name">' + p.name + '</div>' +
-          '<div class="ci-meta">' + (COLL_MAP[p.coll] ? COLL_MAP[p.coll].title : "") + ' · ' + i.size + '</div>' +
+          '<div class="ci-name">' + esc(p.name) + '</div>' +
+          '<div class="ci-meta">' + esc(lineMeta(i)) + '</div>' +
           '<div class="ci-price">' + money(p.price) + '</div>' +
         '</div>' +
         '<div class="ci-right">' +
           '<div class="qty"><button data-act="dec" aria-label="Меньше">−</button><span>' + i.qty + '</span><button data-act="inc" aria-label="Больше">+</button></div>' +
           '<button class="ci-remove">Удалить</button>' +
         '</div>';
-      if (p.img) line.querySelector(".thumb").style.backgroundImage = "url('" + p.img + "')";
-      line.querySelector('[data-act="inc"]').addEventListener("click", function () { setQty(i.id, i.size, i.qty + 1); });
-      line.querySelector('[data-act="dec"]').addEventListener("click", function () { setQty(i.id, i.size, i.qty - 1); });
-      line.querySelector(".ci-remove").addEventListener("click", function () { removeItem(i.id, i.size); });
+      if (p.img) line.querySelector(".thumb").style.backgroundImage = "url('" + encodeURI(p.img) + "')";
+      line.querySelector('[data-act="inc"]').addEventListener("click", function () { setQty(i.id, i.size, i.color, i.qty + 1); });
+      line.querySelector('[data-act="dec"]').addEventListener("click", function () { setQty(i.id, i.size, i.color, i.qty - 1); });
+      line.querySelector(".ci-remove").addEventListener("click", function () { removeItem(i.id, i.size, i.color); });
       box.appendChild(line);
     });
     foot.innerHTML =
@@ -231,14 +230,14 @@
       toast = el("div", "shop-toast");
       document.body.appendChild(toast);
     }
-    toast.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' + text;
+    toast.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' + esc(text);
     toast.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 2600);
   }
 
   /* ----------------------------------------------------------------------
-     8. КАТАЛОG: фильтры + сетка товаров (shop.html)
+     8. КАТАЛОГ: фильтры + сетка товаров (shop.html)
      ---------------------------------------------------------------------- */
   function initShop() {
     var grid = document.getElementById("shop-grid");
@@ -254,10 +253,14 @@
 
     // --- toolbar ---
     var toolbar = document.getElementById("shop-toolbar");
+    toolbar.innerHTML = "";
     var chipWrap = el("div", "filter-scroll");
-    var chips = [{ key: "all", title: "Все коллекции" }].concat(COLLECTIONS.map(function (c) { return { key: c.key, title: c.title }; }));
+    // показываем только коллекции, в которых есть товары
+    var withItems = {}; PRODUCTS.forEach(function (p) { withItems[p.coll] = 1; });
+    var chips = [{ key: "all", title: "Все коллекции" }].concat(
+      COLLECTIONS.filter(function (c) { return withItems[c.key]; }).map(function (c) { return { key: c.key, title: c.title }; }));
     chips.forEach(function (c) {
-      var b = el("button", "filter-chip" + (c.key === state.coll ? " active" : ""), c.title);
+      var b = el("button", "filter-chip" + (c.key === state.coll ? " active" : ""), esc(c.title));
       b.setAttribute("type", "button");
       b.addEventListener("click", function () {
         state.coll = c.key;
@@ -276,7 +279,9 @@
     var sub = el("div", "shop-subbar");
     sub.innerHTML =
       '<span class="field-inline">Размер:&nbsp;' +
-        '<select id="f-size"><option value="all">Любой</option><option value="' + S1 + '">Size 1 · 50–56</option><option value="' + S2 + '">Size 2 · 58–64</option></select></span>' +
+        '<select id="f-size"><option value="all">Любой</option>' +
+        SIZES.map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join("") +
+        '</select></span>' +
       '<span class="field-inline">Сортировка:&nbsp;' +
         '<select id="f-sort"><option value="default">По умолчанию</option><option value="price-asc">Сначала дешевле</option><option value="price-desc">Сначала дороже</option></select></span>' +
       '<span class="count" id="shop-count"></span>';
@@ -292,8 +297,9 @@
       if (state.sort === "price-desc") list.sort(function (a, b) { return b.price - a.price; });
 
       grid.innerHTML = "";
+      grid.removeAttribute("aria-busy");
       var cnt = document.getElementById("shop-count");
-      cnt.textContent = list.length + (list.length === 1 ? " модель" : (list.length >= 2 && list.length <= 4 ? " модели" : " моделей"));
+      cnt.textContent = list.length + " " + plural(list.length, "модель", "модели", "моделей");
 
       if (!list.length) {
         grid.classList.remove("product-grid");
@@ -304,36 +310,166 @@
       list.forEach(function (p) { grid.appendChild(productCard(p)); });
     }
     render();
+
+    var deep = params.get("product");
+    if (deep && PROD_MAP[deep]) openQuick(PROD_MAP[deep]);
+  }
+
+  function skeleton() {
+    var grid = document.getElementById("shop-grid");
+    if (!grid) return;
+    grid.setAttribute("aria-busy", "true");
+    var h = "";
+    for (var i = 0; i < 6; i++) h += '<div class="product-card p-skel"><div class="p-media"></div><div class="p-body"><span></span><span></span><span></span></div></div>';
+    grid.innerHTML = h;
+  }
+
+  function priceHtml(p) {
+    return '<p class="p-price">' + money(p.price) +
+      (p.oldPrice ? ' <s class="p-old">' + money(p.oldPrice) + '</s><span class="p-off">−' + Math.round((1 - p.price / p.oldPrice) * 100) + '%</span>' : '') +
+      '</p>';
+  }
+  function dotsHtml(p) {
+    if (!p.colors.length) return "";
+    return '<div class="p-dots" aria-label="Цвета">' + p.colors.slice(0, 6).map(function (c) {
+      return '<i title="' + esc(c.name) + '" style="' + esc(swatchStyle(c.hex)) + '"></i>';
+    }).join("") + (p.colors.length > 6 ? '<em>+' + (p.colors.length - 6) + '</em>' : '') + '</div>';
   }
 
   function productCard(p) {
     var c = COLL_MAP[p.coll] || {};
-    var card = el("div", "product-card");
-    var opts = p.sizes.map(function (s) { return '<option value="' + s + '">' + s + '</option>'; }).join("");
+    var card = el("div", "product-card" + (p.soldOut ? " sold-out" : ""));
+    var opts = p.sizes.map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join("");
+    var needChoice = p.colors.length > 1 || !p.sizes.length;
     card.innerHTML =
-      '<div class="p-media">' +
-        (p.coll === "limited" ? '<span class="p-badge">Лимит</span>' : '') +
-        (p.img ? '<img class="p-photo" src="' + p.img + '" alt="' + p.name + '" loading="lazy" />' : emblem()) +
-      '</div>' +
+      '<button class="p-media" type="button" aria-label="Подробнее: ' + esc(p.name) + '">' +
+        (p.badge ? '<span class="p-badge">' + esc(p.badge) + '</span>' : '') +
+        (p.soldOut ? '<span class="p-badge p-badge-out">Нет в наличии</span>' : '') +
+        (p.img ? '<img class="p-photo" src="' + esc(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" />' : emblem()) +
+        (p.images.length > 1 ? '<img class="p-photo p-photo-2" src="' + esc(p.images[1]) + '" alt="" loading="lazy" />' : '') +
+      '</button>' +
       '<div class="p-body">' +
-        '<span class="p-ln">' + (c.ln || "") + '</span>' +
-        '<h3 class="p-name">' + p.name + '</h3>' +
-        '<p class="p-desc">' + p.desc + '</p>' +
-        '<p class="p-fabric">Ткань: ' + p.fabric + '</p>' +
-        '<p class="p-price">' + money(p.price) + '</p>' +
+        '<span class="p-ln">' + esc(c.ln || c.title || "") + '</span>' +
+        '<h3 class="p-name"><a href="shop.html?product=' + encodeURIComponent(p.id) + '">' + esc(p.name) + '</a></h3>' +
+        (p.desc ? '<p class="p-desc">' + esc(p.desc) + '</p>' : '') +
+        (p.fabric ? '<p class="p-fabric">Ткань: ' + esc(p.fabric) + '</p>' : '') +
+        dotsHtml(p) +
+        priceHtml(p) +
         '<div class="p-buy">' +
-          '<select class="p-size" aria-label="Размер">' + opts + '</select>' +
-          '<button class="btn btn-gold p-add" type="button" aria-label="В корзину">' +
-            '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>' +
-          '</button>' +
+          (p.soldOut ? '<button class="btn btn-ghost p-more" type="button">Подробнее</button>' :
+            (needChoice ? '<button class="btn btn-gold p-more" type="button">Выбрать цвет и размер</button>' :
+            '<select class="p-size" aria-label="Размер">' + opts + '</select>' +
+            '<button class="btn btn-gold p-add" type="button" aria-label="В корзину">' +
+              '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>' +
+            '</button>')) +
         '</div>' +
       '</div>';
-    card.querySelector(".p-add").addEventListener("click", function () {
+    function more(e) { if (e) e.preventDefault(); openQuick(p); }
+    card.querySelector(".p-media").addEventListener("click", more);
+    card.querySelector(".p-name a").addEventListener("click", more);
+    var m = card.querySelector(".p-more"); if (m) m.addEventListener("click", more);
+    var add = card.querySelector(".p-add");
+    if (add) add.addEventListener("click", function () {
       var size = card.querySelector(".p-size").value;
-      addToCart(p.id, size);
+      addToCart(p.id, size, p.colors[0] ? p.colors[0].name : "");
       showToast("«" + p.name + "» добавлено в корзину");
     });
     return card;
+  }
+
+  /* ----------------------------------------------------------------------
+     8.1 КАРТОЧКА ТОВАРА (быстрый просмотр: галерея, цвет, размер)
+     ---------------------------------------------------------------------- */
+  var qv, qvOverlay;
+  function closeQuick() {
+    if (!qv || !qv.classList.contains("open")) return;
+    qv.classList.remove("open"); qvOverlay.classList.remove("open");
+    document.body.classList.remove("cart-open");
+    var u = new URL(location.href);
+    if (u.searchParams.has("product")) { u.searchParams.delete("product"); history.replaceState(null, "", u); }
+  }
+  function openQuick(p) {
+    if (!qv) {
+      qvOverlay = el("div", "cart-overlay qv-overlay");
+      qv = el("div", "qv");
+      qv.setAttribute("role", "dialog"); qv.setAttribute("aria-modal", "true");
+      document.body.appendChild(qvOverlay); document.body.appendChild(qv);
+      qvOverlay.addEventListener("click", closeQuick);
+    }
+    var c = COLL_MAP[p.coll] || {};
+    var sel = { size: p.sizes.length === 1 ? p.sizes[0] : "", color: p.colors.length === 1 ? p.colors[0].name : "" };
+    var imgs = p.images.length ? p.images : [""];
+    qv.innerHTML =
+      '<button class="qv-close" type="button" aria-label="Закрыть">×</button>' +
+      '<div class="qv-gal">' +
+        '<div class="qv-track">' + imgs.map(function (src, i) {
+          return '<div class="qv-slide">' + (src ? '<img src="' + esc(src) + '" alt="' + esc(p.name) + (i ? ' — фото ' + (i + 1) : '') + '"' + (i ? ' loading="lazy"' : '') + ' />' : emblem()) + '</div>';
+        }).join("") + '</div>' +
+        (imgs.length > 1 ? '<div class="qv-thumbs">' + imgs.map(function (src, i) {
+          return '<button type="button" data-i="' + i + '" class="' + (i ? '' : 'on') + '" style="background-image:url(\'' + encodeURI(src) + '\')" aria-label="Фото ' + (i + 1) + '"></button>';
+        }).join("") + '</div>' : '') +
+        (p.badge ? '<span class="p-badge">' + esc(p.badge) + '</span>' : '') +
+      '</div>' +
+      '<div class="qv-info">' +
+        '<span class="p-ln">' + esc([c.ln || c.title, p.type].filter(Boolean).join(" · ")) + '</span>' +
+        '<h2 class="qv-name">' + esc(p.name) + '</h2>' +
+        priceHtml(p) +
+        (p.colors.length ? '<div class="qv-opt"><div class="qv-lbl">Цвет: <b data-v="color">' + esc(sel.color || "выберите") + '</b></div><div class="qv-sw">' +
+          p.colors.map(function (col) { return '<button type="button" data-color="' + esc(col.name) + '" title="' + esc(col.name) + '" class="' + (sel.color === col.name ? 'on' : '') + '"><i style="' + esc(swatchStyle(col.hex)) + '"></i></button>'; }).join("") +
+        '</div></div>' : '') +
+        (p.sizes.length ? '<div class="qv-opt"><div class="qv-lbl">Размер: <b data-v="size">' + esc(sel.size || "выберите") + '</b></div><div class="qv-sz">' +
+          p.sizes.map(function (s) { return '<button type="button" data-size="' + esc(s) + '" class="' + (sel.size === s ? 'on' : '') + '">' + esc(s) + '</button>'; }).join("") +
+        '</div></div>' : '') +
+        '<div class="qv-msg" role="status"></div>' +
+        (p.soldOut ? '<button class="btn btn-ghost qv-add" type="button" disabled>Нет в наличии</button>' :
+          '<button class="btn btn-gold qv-add" type="button">Добавить в корзину</button>') +
+        (p.desc ? '<p class="qv-desc">' + esc(p.desc).replace(/\n/g, "<br>") + '</p>' : '') +
+        '<dl class="qv-spec">' +
+          (p.fabric ? '<dt>Ткань</dt><dd>' + esc(p.fabric) + '</dd>' : '') +
+          (p.care ? '<dt>Уход</dt><dd>' + esc(p.care).replace(/\n/g, "<br>") + '</dd>' : '') +
+          (p.sku ? '<dt>Артикул</dt><dd>' + esc(p.sku) + '</dd>' : '') +
+        '</dl>' +
+      '</div>';
+
+    var track = qv.querySelector(".qv-track");
+    var thumbs = qv.querySelectorAll(".qv-thumbs button");
+    thumbs.forEach(function (b) {
+      b.addEventListener("click", function () { track.scrollTo({ left: track.clientWidth * +b.dataset.i, behavior: "smooth" }); });
+    });
+    track.addEventListener("scroll", function () {
+      var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      thumbs.forEach(function (b, k) { b.classList.toggle("on", k === i); });
+    }, { passive: true });
+    qv.querySelector(".qv-close").addEventListener("click", closeQuick);
+    var msg = qv.querySelector(".qv-msg");
+    qv.querySelectorAll("[data-color]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        sel.color = b.dataset.color; msg.textContent = "";
+        qv.querySelectorAll("[data-color]").forEach(function (x) { x.classList.toggle("on", x === b); });
+        qv.querySelector('[data-v="color"]').textContent = sel.color;
+      });
+    });
+    qv.querySelectorAll("[data-size]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        sel.size = b.dataset.size; msg.textContent = "";
+        qv.querySelectorAll("[data-size]").forEach(function (x) { x.classList.toggle("on", x === b); });
+        qv.querySelector('[data-v="size"]').textContent = sel.size;
+      });
+    });
+    var add = qv.querySelector(".qv-add");
+    if (add && !p.soldOut) add.addEventListener("click", function () {
+      if (p.colors.length && !sel.color) { msg.textContent = "Выберите цвет"; return; }
+      if (p.sizes.length && !sel.size) { msg.textContent = "Выберите размер"; return; }
+      addToCart(p.id, sel.size, sel.color);
+      closeQuick();
+      showToast("«" + p.name + "» добавлено в корзину");
+    });
+
+    var u = new URL(location.href);
+    if (/shop\.html$|\/$/.test(u.pathname) || document.getElementById("shop-grid")) { u.searchParams.set("product", p.id); history.replaceState(null, "", u); }
+    qvOverlay.classList.add("open"); qv.classList.add("open");
+    document.body.classList.add("cart-open");
+    qv.scrollTop = 0;
   }
 
   /* ----------------------------------------------------------------------
@@ -344,7 +480,7 @@
     var summary = document.getElementById("checkout-summary");
     if (!summary) return;
 
-    var items = getCart();
+    var items = cartItems();
     var emptyBox = document.getElementById("checkout-empty");
     var layout = document.getElementById("checkout-layout");
 
@@ -359,8 +495,8 @@
     items.forEach(function (i) {
       var p = PROD_MAP[i.id]; if (!p) return;
       sumHtml +=
-        '<div class="co-line"><div class="thumb">' + emblem() + '</div>' +
-        '<div><div class="nm">' + p.name + '</div><div class="mt">' + i.size + ' · ' + i.qty + ' шт.</div></div>' +
+        '<div class="co-line"><div class="thumb"' + (p.img ? ' style="background-image:url(\'' + encodeURI(p.img) + '\')"' : '') + '>' + (p.img ? '' : emblem()) + '</div>' +
+        '<div><div class="nm">' + esc(p.name) + '</div><div class="mt">' + esc([i.size, i.color].filter(Boolean).join(" · ")) + ' · ' + i.qty + ' шт.</div></div>' +
         '<div class="pr">' + money(p.price * i.qty) + '</div></div>';
     });
     sumHtml += '<div class="co-total"><span class="lbl">Итого</span><span class="sum">' + money(cartTotal()) + '</span></div>';
@@ -427,10 +563,11 @@
   function buildOrder(form, method) {
     var get = function (id) { var n = form.querySelector(id); return n ? n.value.trim() : ""; };
     var num = "LJ-" + new Date().toISOString().slice(2, 10).replace(/-/g, "") + "-" + Math.floor(1000 + Math.random() * 9000);
-    var items = getCart();
+    var items = cartItems();
     var lines = items.map(function (i) {
       var p = PROD_MAP[i.id]; if (!p) return "";
-      return "• " + p.name + " (" + i.size + ") × " + i.qty + " — " + money(p.price * i.qty);
+      var opt = [i.size, i.color].filter(Boolean).join(", ");
+      return "• " + p.name + (p.sku ? " [" + p.sku + "]" : "") + (opt ? " (" + opt + ")" : "") + " × " + i.qty + " — " + money(p.price * i.qty);
     }).filter(Boolean);
 
     var methodTxt = method === "delivery" ? "Доставка" : "Самовывоз";
@@ -527,14 +664,21 @@
      ---------------------------------------------------------------------- */
   function init() {
     injectCartButton();
-    injectDrawer();
-    updateCartButton();
-    initShop();
-    initCheckout();
+    skeleton();
+    loadCatalog(function () {
+      injectDrawer();
+      updateCartButton();
+      initShop();
+      initCheckout();
+    });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 
   // экспорт для возможного повторного использования
-  window.LEDIJAZZ_SHOP = { COLLECTIONS: COLLECTIONS, PRODUCTS: PRODUCTS, addToCart: addToCart, openCart: openCart };
+  window.LEDIJAZZ_SHOP = {
+    get COLLECTIONS() { return COLLECTIONS; },
+    get PRODUCTS() { return PRODUCTS; },
+    addToCart: addToCart, openCart: openCart
+  };
 })();

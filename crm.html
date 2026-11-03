@@ -6,7 +6,9 @@
   <meta name="robots" content="noindex, nofollow, noarchive" />
   <title>Панель управления — LEDI JAZZ</title>
   <link rel="icon" type="image/svg+xml" href="assets/img/ledijazz-logo.svg" />
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <meta name="theme-color" content="#F6F1E7" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261103" />
+  <link rel="stylesheet" href="assets/css/crm.css?v=20261103" />
   <style>
     /* ---------- PIN ---------- */
     .pin-screen{min-height:100svh;display:grid;place-items:center;padding:24px;background:
@@ -27,7 +29,7 @@
     /* ---------- KIT ---------- */
     .kit{display:none}
     .kit.show{display:block}
-    .kit-hero{padding:120px 0 36px;background:radial-gradient(110% 130% at 85% 0%, color-mix(in srgb,var(--gold-lt) 38%,var(--ivory)), var(--cream))}
+    .kit-hero{padding:48px 0 36px;background:radial-gradient(110% 130% at 85% 0%, color-mix(in srgb,var(--gold-lt) 38%,var(--ivory)), var(--cream))}
     .kit-nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--ivory) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid color-mix(in srgb,var(--bronze) 16%,transparent)}
     .kit-nav .container{display:flex;gap:6px;overflow-x:auto;padding-block:10px;scrollbar-width:thin}
     .kit-nav a{flex:none;padding:.55em 1.05em;border-radius:100px;font-size:.8rem;font-weight:600;color:var(--graphite);background:var(--white);border:1px solid color-mix(in srgb,var(--bronze) 20%,transparent);white-space:nowrap}
@@ -84,13 +86,26 @@
 </section>
 
 <!-- ============================ KIT ============================ -->
-<main class="kit" id="kit">
+<main class="kit cx-app" id="kit">
+  <header class="cx-top"><div class="container">
+    <a class="cx-brand" href="index.html" target="_blank" rel="noopener" title="Открыть сайт"><img src="assets/img/ledijazz-logo.svg" alt="" /><span>LEDI JAZZ <small>Панель</small></span></a>
+    <nav class="cx-tabs" id="cx-tabs" aria-label="Разделы панели">
+      <button type="button" data-tab="products" class="on"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>Товары</button>
+      <button type="button" data-tab="dicts"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Справочники</button>
+      <button type="button" data-tab="social"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4"/></svg>Соцсети</button>
+    </nav>
+    <button class="cx-icon" id="lock" type="button" title="Выйти из панели" aria-label="Выйти из панели"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></button>
+  </div></header>
+
+  <div class="cx-view on" id="view-products"><div class="container cx-wrap" id="crm-products"></div></div>
+  <div class="cx-view" id="view-dicts"><div class="container cx-wrap" id="crm-dicts"></div></div>
+
+  <div class="cx-view" id="view-social">
   <section class="kit-hero grain">
     <div class="container">
       <span class="kicker">Панель управления · соцсети и мессенджеры</span>
       <h1 class="title" style="font-size:clamp(2.2rem,6vw,4rem);margin:.2em 0 .3em">Материалы для соцсетей</h1>
       <p class="lead">Готовые обложки, аватары и тексты под каждый сервис — в точных размерах и с учётом безопасных зон. Ниже у каждого сервиса: что и куда загружать, лимиты текста и готовые описания. Страница будет пополняться.</p>
-      <p style="margin-top:14px"><button class="lock" id="lock">Закрыть доступ</button></p>
     </div>
   </section>
 
@@ -207,8 +222,12 @@ ledijazz.ru</pre><button class="copy" type="button">Копировать</button
 
 #ledijazz #ледиджаз #платьефлюид #одеждафлюид #платья5064 #одеждабольшихразмеров #платьядлядома #платьядляотдыха #платьядляпутешествий #женщиныпосле45 #элегантность #яживувсвоёмритме</pre><button class="copy" type="button">Копировать</button></div>
   </div></section>
+  </div>
 </main>
 
+<script src="assets/js/config.js"></script>
+<script src="assets/js/catalog-default.js?v=20261103"></script>
+<script src="assets/js/crm-products.js?v=20261103"></script>
 <script>
 (function(){
   var HASH="481f6cc0511143ccdd7e2d1b1b94faf0a700a8b49cd13922a70b5ae28acaa8c5"; // SHA-256 от PIN — сам PIN в коде не хранится
@@ -238,12 +257,12 @@ ledijazz.ru</pre><button class="copy" type="button">Копировать</button
     return H.map(function(x){return ('00000000'+(x>>>0).toString(16)).slice(-8);}).join('');
   }
   function sha256(str){ return Promise.resolve(sha256js(str)); }
-  function unlock(){gate.style.display='none';kit.classList.add('show');try{sessionStorage.setItem('lj_crm','1')}catch(e){}window.scrollTo(0,0);initKit();}
+  function unlock(pin){gate.style.display='none';kit.classList.add('show');try{sessionStorage.setItem('lj_crm','1')}catch(e){}window.scrollTo(0,0);initKit();initTabs();if(window.LJ_CRM)LJ_CRM.start(pin||'');}
   function render(){var v=input.value;spans.forEach(function(s,i){s.textContent=v[i]?'•':'';s.classList.toggle('filled',!!v[i]);s.classList.toggle('active',i===v.length);});}
   function check(){var v=input.value;if(v.length<6)return;
     var reject=function(){boxes.classList.add('err');msg.textContent='Неверный PIN. Попробуйте ещё раз.';setTimeout(function(){boxes.classList.remove('err');input.value='';render();},450);};
     try{
-      sha256(v).then(function(h){ if(h===HASH){unlock();} else {reject();} })
+      sha256(v).then(function(h){ if(h===HASH){unlock(v);} else {reject();} })
                .catch(function(e){ msg.textContent='Ошибка проверки: '+e; });
     }catch(e){ msg.textContent='Ошибка проверки: '+e; }
   }
@@ -253,7 +272,20 @@ ledijazz.ru</pre><button class="copy" type="button">Копировать</button
   document.addEventListener('click',function(){if(gate.style.display!=='none')input.focus();},{once:true});
   render(); input.focus();
   try{if(sessionStorage.getItem('lj_crm')==='1')unlock();}catch(e){}
-  document.getElementById('lock').addEventListener('click',function(){try{sessionStorage.removeItem('lj_crm')}catch(e){}location.reload();});
+  document.getElementById('lock').addEventListener('click',function(){try{sessionStorage.removeItem('lj_crm')}catch(e){}
+    var go=function(){location.reload();}; if(window.LJ_CRM){LJ_CRM.logout().then(go,go);}else go();});
+
+  var tabsInited=false;
+  function initTabs(){ if(tabsInited)return; tabsInited=true;
+    var btns=document.querySelectorAll('#cx-tabs button');
+    function show(t){ btns.forEach(function(b){b.classList.toggle('on',b.dataset.tab===t);});
+      ['products','dicts','social'].forEach(function(k){document.getElementById('view-'+k).classList.toggle('on',k===t);});
+      try{sessionStorage.setItem('lj_crm_tab',t)}catch(e){} window.scrollTo(0,0); }
+    btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.tab);});});
+    var saved='products'; try{saved=sessionStorage.getItem('lj_crm_tab')||'products'}catch(e){}
+    if(/^#(vk|tg|max|ok|ig)$/.test(location.hash))saved='social';
+    show(saved);
+  }
 
   var inited=false;
   function initKit(){ if(inited)return; inited=true;

@@ -27,6 +27,8 @@ AddDefaultCharset UTF-8
   ExpiresByType font/woff2  "access plus 1 year"
   ExpiresByType text/css    "access plus 7 days"
   ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/webp  "access plus 30 days"
+  ExpiresByType application/json "access plus 0 seconds"
 </IfModule>
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
@@ -34,6 +36,10 @@ AddDefaultCharset UTF-8
 
 # 4. Служебные файлы автодеплоя — закрыть от посетителей
 RedirectMatch 404 ^/\.deploy-tmp(/|$)
+# Каталог из панели управления (data/catalog.json, резервные копии) — только через api/
+RedirectMatch 404 ^/data(/|$)
+# В папке фото товаров нельзя выполнять скрипты
+RewriteRule ^uploads/.*\.(php\d?|phtml|phar|pl|py|cgi|sh)$ - [F,NC,L]
 <FilesMatch "^(deploy\.log|\.github-token)$">
   Require all denied
 </FilesMatch>

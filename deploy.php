@@ -15,7 +15,9 @@ const TOKEN_SHA256 = 'bc27065a246ec0c2fc39b2da5eb20aeea05597f718e88e570c48a7492a
 // Для ПРИВАТНОГО репозитория: положите рядом файл .github-token с fine-grained
 // токеном GitHub (права: Contents → Read). Для публичного не нужен.
 const GITHUB_TOKEN_FILE = __DIR__ . '/.github-token';
-const EXCLUDE = ['.git', '.github', '.claude', 'README.md', 'ДАННЫЕ-ДЛЯ-ЗАПОЛНЕНИЯ.md', '.gitignore'];
+// data/ и uploads/ — каталог и фото из панели управления: живут только на сервере,
+// деплой их никогда не трогает.
+const EXCLUDE = ['.git', '.github', '.claude', 'README.md', 'ДАННЫЕ-ДЛЯ-ЗАПОЛНЕНИЯ.md', '.gitignore', 'data', 'uploads'];
 // Устаревшие файлы, которые нужно удалить с сервера при деплое
 const REMOVE  = ['kit.html'];
 
