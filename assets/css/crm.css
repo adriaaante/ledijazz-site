@@ -275,3 +275,7 @@ body.cx-lock { overflow: hidden; }
   .ph-grid { grid-template-columns: repeat(2, 1fr); }
   .d-colors { grid-template-columns: 1fr; }
 }
+@media (max-width: 400px) {
+  .cx-tabs .ico { display: none; }
+  .cx-brand img { width: 26px; }
+}

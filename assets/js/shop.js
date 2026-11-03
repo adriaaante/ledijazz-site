@@ -179,7 +179,7 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeCart(); closeQuick(); } });
     renderDrawer();
   }
-  function openCart() { if (!overlay) return; closeQuick(); overlay.classList.add("open"); drawer.classList.add("open"); document.body.classList.add("cart-open"); }
+  function openCart() { if (!overlay) return; closeQuick(); if (toast) toast.classList.remove("show"); overlay.classList.add("open"); drawer.classList.add("open"); document.body.classList.add("cart-open"); }
   function closeCart() { if (!overlay) return; overlay.classList.remove("open"); drawer.classList.remove("open"); document.body.classList.remove("cart-open"); }
 
   function renderDrawer() {
